@@ -9,8 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        canvas:  "#FFFFFF",
+        alt:     "#F5F5F5",
+        ink:     "#2C2B2B",
+        muted:   "#6B6868",
+        line:    "#E8E8E8",
+        sky:     "#5CADD4",
+        btn:     "#3D3B38",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+      },
+      maxWidth: {
+        wrap: "80rem",
       },
     },
   },
