@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
-  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users,
+  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag,
 } from "lucide-react"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
@@ -44,6 +44,7 @@ const emptyProduct: Omit<Product, "id"> = {
 
 const sidebarItems = [
   { id: "products",   label: "Ürünler",     icon: Coffee },
+  { id: "siparisler", label: "Siparişler",  icon: ShoppingBag },
   { id: "hero",       label: "Hero Slider", icon: ImageIcon },
   { id: "hakkimizda", label: "Hakkımızda",  icon: Info },
   { id: "iletisim",   label: "İletişim",    icon: Phone },
@@ -162,8 +163,9 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
       {/* Main */}
       <main style={{ flex: 1, minWidth: 0, padding: "2.5rem 2rem 4rem" }}>
-        {section === "products"   && <ProductsSection onToast={showToast} />}
-        {section === "hero"       && <HeroSection     onToast={showToast} />}
+        {section === "products"   && <ProductsSection   onToast={showToast} />}
+        {section === "siparisler" && <SiparislerSection onToast={showToast} />}
+        {section === "hero"       && <HeroSection       onToast={showToast} />}
         {section === "hakkimizda" && <HakkimizdaSection onToast={showToast} />}
         {section === "iletisim"   && <IletisimSection  onToast={showToast} />}
         {section === "kurumsal"   && <KurumsalSection  onToast={showToast} />}
@@ -990,6 +992,218 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
           <SaveBtn saving={saving} onClick={save} />
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Siparişler Section ───────────────────────────────────────────────────────
+
+type AdminOrder = {
+  id: string; status: string; total: number; tracking_number: string | null
+  created_at: string; user_id: string
+  items: { name: string; qty: number; image: string; price: number }[]
+  profiles: { full_name: string | null; email: string | null; phone: string | null } | null
+}
+
+const orderStatuses = [
+  { id: "pending",   label: "Beklemede",     color: "#F59E0B" },
+  { id: "paid",      label: "Ödendi",        color: "#5CADD4" },
+  { id: "preparing", label: "Hazırlanıyor",  color: "#8B5CF6" },
+  { id: "shipped",   label: "Kargoda",       color: "#3B82F6" },
+  { id: "delivered", label: "Teslim Edildi", color: "#1A7A3F" },
+  { id: "cancelled", label: "İptal Edildi",  color: "#e53e3e" },
+]
+
+function SiparislerSection({ onToast }: { onToast: (m: string) => void }) {
+  const [orders, setOrders]   = useState<AdminOrder[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter]   = useState("all")
+  const [selected, setSelected] = useState<AdminOrder | null>(null)
+  const [editStatus, setEditStatus]   = useState("")
+  const [editTracking, setEditTracking] = useState("")
+  const [saving, setSaving]   = useState(false)
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const res = await fetch("/api/admin/orders", { headers: { "x-admin-pw": "dearko2024" } })
+    const data = await res.json()
+    setOrders(Array.isArray(data) ? data : [])
+    setLoading(false)
+  }
+
+  function openOrder(o: AdminOrder) {
+    setSelected(o); setEditStatus(o.status); setEditTracking(o.tracking_number ?? "")
+  }
+
+  async function saveOrder() {
+    if (!selected) return
+    setSaving(true)
+    await fetch("/api/admin/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "x-admin-pw": "dearko2024" },
+      body: JSON.stringify({ id: selected.id, status: editStatus, tracking_number: editTracking || null }),
+    })
+    setSaving(false)
+    onToast("Sipariş güncellendi ✓")
+    setSelected(null)
+    load()
+  }
+
+  const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter)
+
+  const statusMap = Object.fromEntries(orderStatuses.map((s) => [s.id, s]))
+
+  return (
+    <div>
+      <SectionHeader title="Siparişler" subtitle={`${orders.length} toplam sipariş`} />
+
+      {/* Filtre */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button onClick={() => setFilter("all")}
+          style={{ padding: "0.4rem 0.875rem", fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", border: "1px solid", borderColor: filter === "all" ? "#2C2B2B" : "#E8E8E8", background: filter === "all" ? "#2C2B2B" : "transparent", color: filter === "all" ? "#fff" : "#6B6868", cursor: "pointer" }}>
+          Tümü ({orders.length})
+        </button>
+        {orderStatuses.map((s) => {
+          const count = orders.filter((o) => o.status === s.id).length
+          return (
+            <button key={s.id} onClick={() => setFilter(s.id)}
+              style={{ padding: "0.4rem 0.875rem", fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", border: "1px solid", borderColor: filter === s.id ? s.color : "#E8E8E8", background: filter === s.id ? s.color : "transparent", color: filter === s.id ? "#fff" : "#6B6868", cursor: "pointer" }}>
+              {s.label} ({count})
+            </button>
+          )
+        })}
+      </div>
+
+      {loading ? (
+        <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
+      ) : filtered.length === 0 ? (
+        <p style={{ fontSize: "0.875rem", color: "#6B6868" }}>Sipariş bulunamadı.</p>
+      ) : (
+        <div style={{ border: "1px solid #E8E8E8", background: "#fff" }}>
+          <div className="hidden md:grid px-4 py-3"
+            style={{ gridTemplateColumns: "1fr 2fr 1.5fr 1fr 1fr 0.5fr", borderBottom: "1px solid #E8E8E8", background: "#F5F5F5" }}>
+            {["Tarih", "Müşteri", "Ürünler", "Tutar", "Durum", ""].map((h) => (
+              <span key={h} style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6B6868" }}>{h}</span>
+            ))}
+          </div>
+          {filtered.map((o, i) => {
+            const st = statusMap[o.status] ?? { label: o.status, color: "#6B6868" }
+            return (
+              <div key={o.id} className="flex md:grid items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FAFAFA] transition-colors"
+                style={{ gridTemplateColumns: "1fr 2fr 1.5fr 1fr 1fr 0.5fr", borderBottom: i < filtered.length - 1 ? "1px solid #E8E8E8" : undefined }}
+                onClick={() => openOrder(o)}>
+                <p style={{ fontSize: "0.8rem", color: "#6B6868" }}>
+                  {new Date(o.created_at).toLocaleDateString("tr-TR")}
+                </p>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>
+                    {o.profiles?.full_name ?? "—"}
+                  </p>
+                  <p style={{ fontSize: "0.72rem", color: "#6B6868" }}>{o.profiles?.email ?? "—"}</p>
+                </div>
+                <p className="hidden md:block" style={{ fontSize: "0.8rem", color: "#6B6868" }}>
+                  {o.items?.map((it) => `${it.name}${it.qty > 1 ? ` x${it.qty}` : ""}`).join(", ") ?? "—"}
+                </p>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>
+                  ₺{(o.total / 100).toLocaleString("tr-TR")}
+                </p>
+                <div className="hidden md:flex items-center gap-1.5">
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, display: "inline-block", flexShrink: 0 }} />
+                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: st.color }}>{st.label}</span>
+                </div>
+                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
+                  Detay
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Detay Modal */}
+      {selected && (
+        <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto py-10 px-4" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <div style={{ background: "#FFFFFF", width: "100%", maxWidth: "560px", padding: "2rem", position: "relative" }}>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase", color: "#2C2B2B" }}>
+                  Sipariş Detayı
+                </h2>
+                <p style={{ fontSize: "0.72rem", color: "#6B6868", marginTop: "0.15rem" }}>
+                  #{selected.id.slice(0, 8).toUpperCase()} · {new Date(selected.created_at).toLocaleDateString("tr-TR")}
+                </p>
+              </div>
+              <button onClick={() => setSelected(null)} style={{ color: "#6B6868", background: "none", border: "none", cursor: "pointer" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Müşteri */}
+            <div className="mb-5 p-3" style={{ background: "#F5F5F5" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>
+                {selected.profiles?.full_name ?? "—"}
+              </p>
+              <p style={{ fontSize: "0.8rem", color: "#6B6868" }}>{selected.profiles?.email ?? "—"}</p>
+              {selected.profiles?.phone && <p style={{ fontSize: "0.8rem", color: "#6B6868" }}>{selected.profiles.phone}</p>}
+            </div>
+
+            {/* Ürünler */}
+            <div className="mb-5" style={{ borderTop: "1px solid #E8E8E8", paddingTop: "1.25rem" }}>
+              <p className="label-ink mb-3">Ürünler</p>
+              <div className="space-y-3">
+                {selected.items?.map((it, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-10 h-10 overflow-hidden flex-shrink-0" style={{ background: "#F5F5F5" }}>
+                      <img src={it.image} alt={it.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p style={{ fontSize: "0.8125rem", fontFamily: "var(--font-inter)", fontWeight: 500, color: "#2C2B2B" }}>{it.name}</p>
+                      <p style={{ fontSize: "0.75rem", color: "#6B6868" }}>x{it.qty}</p>
+                    </div>
+                    <p style={{ fontSize: "0.8125rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#2C2B2B", flexShrink: 0 }}>
+                      ₺{((it.price * it.qty) / 100).toLocaleString("tr-TR")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center pt-3 mt-3" style={{ borderTop: "1px solid #E8E8E8" }}>
+                <span style={{ fontSize: "0.8rem", color: "#6B6868" }}>Toplam</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "1.1rem", color: "#2C2B2B" }}>
+                  ₺{(selected.total / 100).toLocaleString("tr-TR")}
+                </span>
+              </div>
+            </div>
+
+            {/* Durum & Kargo */}
+            <div className="space-y-4" style={{ borderTop: "1px solid #E8E8E8", paddingTop: "1.25rem" }}>
+              <div>
+                <label className="label-ink block mb-2">Sipariş Durumu</label>
+                <div className="relative">
+                  <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} className="select">
+                    {orderStatuses.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#6B6868" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                </div>
+              </div>
+              <div>
+                <label className="label-ink block mb-2">Kargo Takip Numarası</label>
+                <input value={editTracking} onChange={(e) => setEditTracking(e.target.value)}
+                  className="input" placeholder="Örn: 1234567890" />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 pt-5" style={{ borderTop: "1px solid #E8E8E8" }}>
+              <button onClick={() => setSelected(null)} className="btn-outline flex-1 justify-center">İptal</button>
+              <button onClick={saveOrder} disabled={saving} className="btn-dark flex-1 justify-center"
+                style={{ opacity: saving ? 0.6 : 1 }}>
+                {saving ? "Kaydediliyor…" : "Kaydet"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
