@@ -24,6 +24,8 @@ function getDays() {
 export default function Rezervasyon() {
   const [step, setStep] = useState(0)
   const [done, setDone] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
   const [form, setForm] = useState({
     date: "", startTime: "", duration: 2,
     service: "", eventType: "", location: "",
@@ -42,6 +44,20 @@ export default function Rezervasyon() {
   const price = () => {
     const base: Record<string, number> = { "espresso-bar": 2500, "filter-station": 2000, "cold-brew": 1800, "full-menu": 3500 }
     return (base[form.service] || 2500) + Math.max(0, form.duration - 2) * 800
+  }
+
+  async function handleSubmit() {
+    setSubmitting(true)
+    setSubmitError("")
+    const res = await fetch("/api/rezervasyon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, estimatedPrice: price() }),
+    })
+    const json = await res.json()
+    setSubmitting(false)
+    if (json.error) { setSubmitError("Bir hata oluştu, lütfen tekrar deneyin."); return }
+    setDone(true)
   }
 
   if (done) return (
@@ -296,9 +312,13 @@ export default function Rezervasyon() {
                   İleri <ChevronRight size={14} />
                 </button>
               ) : (
-                <button onClick={() => setDone(true)} className="btn-dark flex items-center gap-2">
-                  <Check size={14} /> Gönder
-                </button>
+                <div className="flex flex-col items-end gap-2">
+                  {submitError && <p style={{ fontSize: "0.8rem", color: "#e53e3e" }}>{submitError}</p>}
+                  <button onClick={handleSubmit} disabled={submitting} className="btn-dark flex items-center gap-2"
+                    style={{ opacity: submitting ? 0.6 : 1 }}>
+                    {submitting ? "Gönderiliyor…" : <><Check size={14} /> Gönder</>}
+                  </button>
+                </div>
               )}
             </div>
 

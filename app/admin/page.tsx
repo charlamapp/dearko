@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
-  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag,
+  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck,
 } from "lucide-react"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
@@ -43,14 +43,15 @@ const emptyProduct: Omit<Product, "id"> = {
 }
 
 const sidebarItems = [
-  { id: "products",   label: "Ürünler",     icon: Coffee },
-  { id: "siparisler", label: "Siparişler",  icon: ShoppingBag },
-  { id: "hero",       label: "Hero Slider", icon: ImageIcon },
-  { id: "hakkimizda", label: "Hakkımızda",  icon: Info },
-  { id: "iletisim",   label: "İletişim",    icon: Phone },
-  { id: "kurumsal",   label: "Kurumsal",    icon: Building2 },
-  { id: "mobilArac",  label: "Mobil Araç",  icon: Truck },
-  { id: "musteriler", label: "Müşteriler",  icon: Users },
+  { id: "products",      label: "Ürünler",       icon: Coffee },
+  { id: "siparisler",    label: "Siparişler",     icon: ShoppingBag },
+  { id: "rezervasyonlar", label: "Rezervasyonlar", icon: CalendarCheck },
+  { id: "hero",          label: "Hero Slider",    icon: ImageIcon },
+  { id: "hakkimizda",    label: "Hakkımızda",     icon: Info },
+  { id: "iletisim",      label: "İletişim",       icon: Phone },
+  { id: "kurumsal",      label: "Kurumsal",       icon: Building2 },
+  { id: "mobilArac",     label: "Mobil Araç",     icon: Truck },
+  { id: "musteriler",    label: "Müşteriler",     icon: Users },
 ] as const
 
 type Section = typeof sidebarItems[number]["id"]
@@ -163,9 +164,10 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
       {/* Main */}
       <main style={{ flex: 1, minWidth: 0, padding: "2.5rem 2rem 4rem" }}>
-        {section === "products"   && <ProductsSection   onToast={showToast} />}
-        {section === "siparisler" && <SiparislerSection onToast={showToast} />}
-        {section === "hero"       && <HeroSection       onToast={showToast} />}
+        {section === "products"       && <ProductsSection      onToast={showToast} />}
+        {section === "siparisler"    && <SiparislerSection    onToast={showToast} />}
+        {section === "rezervasyonlar" && <RezervasyonlarSection onToast={showToast} />}
+        {section === "hero"           && <HeroSection          onToast={showToast} />}
         {section === "hakkimizda" && <HakkimizdaSection onToast={showToast} />}
         {section === "iletisim"   && <IletisimSection  onToast={showToast} />}
         {section === "kurumsal"   && <KurumsalSection  onToast={showToast} />}
@@ -1339,6 +1341,204 @@ function MusterilerSection({ onToast }: { onToast: (m: string) => void }) {
               <button onClick={saveNote} disabled={savingNote} className="btn-dark"
                 style={{ opacity: savingNote ? 0.6 : 1 }}>
                 {savingNote ? "Kaydediliyor…" : "Notu Kaydet"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Rezervasyonlar Section ───────────────────────────────────────────────────
+
+type Reservation = {
+  id: string; date: string; start_time: string; duration: number
+  service: string; event_type: string; location: string; guest_count: string
+  notes: string | null; name: string; email: string; phone: string
+  company: string | null; status: string; admin_notes: string | null
+  estimated_price: number | null; created_at: string
+}
+
+const rezervasyonStatuses = [
+  { id: "new",       label: "Yeni",          color: "#5CADD4" },
+  { id: "contacted", label: "İletişime Geçildi", color: "#8B5CF6" },
+  { id: "confirmed", label: "Onaylandı",     color: "#1A7A3F" },
+  { id: "cancelled", label: "İptal Edildi",  color: "#e53e3e" },
+]
+
+const serviceNames: Record<string, string> = {
+  "espresso-bar":    "Espresso Bar",
+  "filter-station":  "Filter İstasyonu",
+  "cold-brew":       "Cold Brew",
+  "full-menu":       "Tam Menü",
+}
+
+function RezervasyonlarSection({ onToast }: { onToast: (m: string) => void }) {
+  const [list, setList]         = useState<Reservation[]>([])
+  const [loading, setLoading]   = useState(true)
+  const [filter, setFilter]     = useState("all")
+  const [selected, setSelected] = useState<Reservation | null>(null)
+  const [editStatus, setEditStatus]       = useState("")
+  const [editAdminNotes, setEditAdminNotes] = useState("")
+  const [saving, setSaving]     = useState(false)
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const res = await fetch("/api/admin/rezervasyonlar", { headers: { "x-admin-pw": "dearko2024" } })
+    const data = await res.json()
+    setList(Array.isArray(data) ? data : [])
+    setLoading(false)
+  }
+
+  function openItem(r: Reservation) {
+    setSelected(r); setEditStatus(r.status); setEditAdminNotes(r.admin_notes ?? "")
+  }
+
+  async function saveItem() {
+    if (!selected) return
+    setSaving(true)
+    await fetch("/api/admin/rezervasyonlar", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "x-admin-pw": "dearko2024" },
+      body: JSON.stringify({ id: selected.id, status: editStatus, admin_notes: editAdminNotes || null }),
+    })
+    setSaving(false); onToast("Rezervasyon güncellendi ✓")
+    setSelected(null); load()
+  }
+
+  const filtered = filter === "all" ? list : list.filter((r) => r.status === filter)
+  const statusMap = Object.fromEntries(rezervasyonStatuses.map((s) => [s.id, s]))
+
+  return (
+    <div>
+      <SectionHeader title="Rezervasyonlar" subtitle={`${list.length} toplam rezervasyon`} />
+
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button onClick={() => setFilter("all")}
+          style={{ padding: "0.4rem 0.875rem", fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", border: "1px solid", borderColor: filter === "all" ? "#2C2B2B" : "#E8E8E8", background: filter === "all" ? "#2C2B2B" : "transparent", color: filter === "all" ? "#fff" : "#6B6868", cursor: "pointer" }}>
+          Tümü ({list.length})
+        </button>
+        {rezervasyonStatuses.map((s) => {
+          const count = list.filter((r) => r.status === s.id).length
+          return (
+            <button key={s.id} onClick={() => setFilter(s.id)}
+              style={{ padding: "0.4rem 0.875rem", fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", border: "1px solid", borderColor: filter === s.id ? s.color : "#E8E8E8", background: filter === s.id ? s.color : "transparent", color: filter === s.id ? "#fff" : "#6B6868", cursor: "pointer" }}>
+              {s.label} ({count})
+            </button>
+          )
+        })}
+      </div>
+
+      {loading ? (
+        <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
+      ) : filtered.length === 0 ? (
+        <p style={{ fontSize: "0.875rem", color: "#6B6868" }}>Rezervasyon bulunamadı.</p>
+      ) : (
+        <div style={{ border: "1px solid #E8E8E8", background: "#fff" }}>
+          <div className="hidden md:grid px-4 py-3"
+            style={{ gridTemplateColumns: "1fr 1.5fr 1.5fr 1fr 1fr 0.5fr", borderBottom: "1px solid #E8E8E8", background: "#F5F5F5" }}>
+            {["Tarih", "Ad / E-posta", "Hizmet / Konum", "Misafir", "Durum", ""].map((h) => (
+              <span key={h} style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6B6868" }}>{h}</span>
+            ))}
+          </div>
+          {filtered.map((r, i) => {
+            const st = statusMap[r.status] ?? { label: r.status, color: "#6B6868" }
+            return (
+              <div key={r.id} className="flex md:grid items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FAFAFA] transition-colors"
+                style={{ gridTemplateColumns: "1fr 1.5fr 1.5fr 1fr 1fr 0.5fr", borderBottom: i < filtered.length - 1 ? "1px solid #E8E8E8" : undefined }}
+                onClick={() => openItem(r)}>
+                <div>
+                  <p style={{ fontSize: "0.8rem", color: "#2C2B2B", fontFamily: "var(--font-inter)", fontWeight: 500 }}>{r.date}</p>
+                  <p style={{ fontSize: "0.72rem", color: "#6B6868" }}>{r.start_time} · {r.duration}s</p>
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>{r.name}</p>
+                  <p style={{ fontSize: "0.72rem", color: "#6B6868" }}>{r.email}</p>
+                </div>
+                <div className="hidden md:block" style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: "0.8rem", color: "#2C2B2B" }}>{serviceNames[r.service] ?? r.service}</p>
+                  <p style={{ fontSize: "0.72rem", color: "#6B6868", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.location}</p>
+                </div>
+                <p className="hidden md:block" style={{ fontSize: "0.8rem", color: "#6B6868" }}>{r.guest_count}</p>
+                <div className="hidden md:flex items-center gap-1.5">
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, display: "inline-block", flexShrink: 0 }} />
+                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: st.color }}>{st.label}</span>
+                </div>
+                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
+                  Detay
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto py-10 px-4" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <div style={{ background: "#FFFFFF", width: "100%", maxWidth: "560px", padding: "2rem", position: "relative" }}>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase", color: "#2C2B2B" }}>Rezervasyon Detayı</h2>
+                <p style={{ fontSize: "0.72rem", color: "#6B6868", marginTop: "0.15rem" }}>
+                  {selected.date} · {selected.start_time} · {selected.duration} saat
+                </p>
+              </div>
+              <button onClick={() => setSelected(null)} style={{ color: "#6B6868", background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-5">
+              {[
+                ["Ad Soyad",   selected.name],
+                ["E-posta",    selected.email],
+                ["Telefon",    selected.phone],
+                ["Şirket",     selected.company ?? "—"],
+                ["Hizmet",     serviceNames[selected.service] ?? selected.service],
+                ["Etkinlik",   selected.event_type],
+                ["Konum",      selected.location],
+                ["Misafir",    selected.guest_count],
+                ["Tahmini",    selected.estimated_price ? `₺${selected.estimated_price.toLocaleString("tr-TR")}` : "—"],
+                ["Kayıt",      new Date(selected.created_at).toLocaleDateString("tr-TR")],
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <p style={{ fontSize: "0.7rem", fontFamily: "var(--font-inter)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6B6868", marginBottom: "0.15rem" }}>{k}</p>
+                  <p style={{ fontSize: "0.875rem", color: "#2C2B2B" }}>{v}</p>
+                </div>
+              ))}
+            </div>
+
+            {selected.notes && (
+              <div className="mb-5 p-3" style={{ background: "#F5F5F5" }}>
+                <p style={{ fontSize: "0.7rem", fontFamily: "var(--font-inter)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6B6868", marginBottom: "0.3rem" }}>Müşteri Notu</p>
+                <p style={{ fontSize: "0.875rem", color: "#2C2B2B" }}>{selected.notes}</p>
+              </div>
+            )}
+
+            <div className="space-y-4" style={{ borderTop: "1px solid #E8E8E8", paddingTop: "1.25rem" }}>
+              <div>
+                <label className="label-ink block mb-2">Durum</label>
+                <div className="relative">
+                  <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} className="select">
+                    {rezervasyonStatuses.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#6B6868" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                </div>
+              </div>
+              <div>
+                <label className="label-ink block mb-2">Admin Notu</label>
+                <textarea rows={3} value={editAdminNotes} onChange={(e) => setEditAdminNotes(e.target.value)}
+                  className="input resize-none" placeholder="İç not, fiyat bilgisi, vb."
+                  style={{ paddingTop: "0.75rem" }} />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 pt-5" style={{ borderTop: "1px solid #E8E8E8" }}>
+              <button onClick={() => setSelected(null)} className="btn-outline flex-1 justify-center">İptal</button>
+              <button onClick={saveItem} disabled={saving} className="btn-dark flex-1 justify-center"
+                style={{ opacity: saving ? 0.6 : 1 }}>
+                {saving ? "Kaydediliyor…" : "Kaydet"}
               </button>
             </div>
           </div>
