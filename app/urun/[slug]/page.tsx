@@ -41,7 +41,7 @@ export default function ProductPage() {
   if (products.length > 0 && !p) notFound()
 
   if (!p) return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div className="w-6 h-6 border-2 border-ink border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -57,7 +57,7 @@ export default function ProductPage() {
   const hasVideo = Boolean(p.video)
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
 
       {/* Breadcrumb */}
       <div className="py-4" style={{ borderBottom: "1px solid #E8E8E8" }}>

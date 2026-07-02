@@ -1,4 +1,5 @@
 import Hero from "@/components/sections/Hero"
+import TrustBar from "@/components/sections/TrustBar"
 import FeaturedProducts from "@/components/sections/FeaturedProducts"
 import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
 import OriginsSection from "@/components/sections/OriginsSection"
@@ -8,11 +9,12 @@ import PhilosophySection from "@/components/sections/PhilosophySection"
 
 export default function HomePage() {
   return (
-    <div style={{ paddingTop: "4rem" }}>
+    <div style={{ paddingTop: "5.5rem" }}>
       <Hero />
+      <TrustBar />
       <FeaturedProducts />
-      <SubscriptionBanner />
       <OriginsSection />
+      <SubscriptionBanner />
       <MobileBanner />
       <CorporateBanner />
       <PhilosophySection />

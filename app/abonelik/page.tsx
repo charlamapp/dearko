@@ -6,7 +6,7 @@ export const metadata = { title: "Abonelik" }
 
 export default function AbonelikPage() {
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
 
       {/* Hero */}
       <section className="pt-14 pb-16" style={{ borderBottom: "1px solid #E8E8E8" }}>

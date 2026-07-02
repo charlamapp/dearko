@@ -21,7 +21,7 @@ export default function HakkimizdaPage() {
   }, [])
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
 
       <section className="pt-14 pb-16" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

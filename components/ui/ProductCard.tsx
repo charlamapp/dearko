@@ -6,21 +6,13 @@ import { Check } from "lucide-react"
 import { useCart } from "@/lib/cart"
 
 type Props = {
-  id: string
-  name: string
-  price: number
-  image: string
-  origin?: string
-  roast?: string
-  brand?: string
-  weight?: string
-  [key: string]: unknown
+  id: string; name: string; price: number; image: string
+  weight?: string; origin?: string; roast?: string; brand?: string; category?: string
 }
 
-export default function ProductCard({ id, name, price, image, origin, roast, brand, weight }: Props) {
+export default function ProductCard({ id, name, price, image, weight, origin, roast, brand, category }: Props) {
   const { add } = useCart()
   const [added, setAdded] = useState(false)
-  const meta = origin ? `${origin}${roast ? " · " + roast : ""}` : brand ?? ""
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
@@ -29,24 +21,47 @@ export default function ProductCard({ id, name, price, image, origin, roast, bra
     setTimeout(() => setAdded(false), 1800)
   }
 
+  const meta = category === "equipment" ? brand : origin ? `${origin}${roast ? ` · ${roast}` : ""}` : null
+
   return (
     <Link href={`/urun/${id}`} className="group block no-underline">
-      <div className="aspect-square overflow-hidden mb-3 relative" style={{ background: "#F5F5F5" }}>
-        <img src={image} alt={name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
-        <button
-          onClick={handleAdd}
-          className="absolute bottom-0 left-0 right-0 py-2.5 flex items-center justify-center gap-1.5 translate-y-full group-hover:translate-y-0 transition-transform duration-200"
-          style={{ background: added ? "#1A7A3F" : "rgba(44,43,43,0.92)", color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase" }}>
-          {added ? <><Check size={11} /> Eklendi</> : "+ Sepete Ekle"}
-        </button>
+      {/* Görsel */}
+      <div className="relative overflow-hidden mb-4" style={{ aspectRatio: "1/1", background: "#F5F5F5" }}>
+        <img
+          src={image} alt={name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+        />
+        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+          <button
+            onClick={handleAdd}
+            className="w-full py-3 flex items-center justify-center gap-2"
+            style={{
+              background: added ? "#1A7A3F" : "#2C2B2B",
+              color: "#fff", border: "none", cursor: "pointer",
+              fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              transition: "background 0.2s",
+            }}>
+            {added ? <><Check size={11} strokeWidth={2.5} /> Eklendi</> : "+ Sepete Ekle"}
+          </button>
+        </div>
       </div>
-      {meta && <p className="label-muted mb-1">{meta}</p>}
-      <h3 style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "0.875rem", fontWeight: 600, color: "#2C2B2B", marginBottom: "0.25rem", lineHeight: 1.35 }}>
-        {name}
-      </h3>
-      <p style={{ fontSize: "0.8125rem", color: "#6B6868" }}>
-        ₺{price}{weight ? ` / ${weight}` : ""}
-      </p>
+
+      {/* Info */}
+      <div>
+        {meta && (
+          <p className="label mb-1.5">{meta}</p>
+        )}
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9rem", fontWeight: 600, color: "#2C2B2B", marginBottom: "0.4rem", lineHeight: 1.35 }}>
+          {name}
+        </p>
+        <div className="flex items-baseline gap-2">
+          <span style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 800, color: "#2C2B2B" }}>
+            ₺{price}
+          </span>
+          {weight && <span style={{ fontSize: "0.75rem", color: "#B0B0B0" }}>/ {weight}</span>}
+        </div>
+      </div>
     </Link>
   )
 }

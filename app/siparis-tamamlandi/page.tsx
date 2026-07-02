@@ -11,7 +11,7 @@ export default function SiparisTamamlandiPage() {
   useEffect(() => { clear() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ maxWidth: "480px", width: "100%", padding: "2rem", textAlign: "center" }}>
 
         <div className="w-16 h-16 flex items-center justify-center mx-auto mb-8" style={{ background: "#5CADD4" }}>

@@ -47,13 +47,13 @@ export default function SiparisDetay() {
   }, [id, router])
 
   if (loading) return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div className="w-6 h-6 border-2 border-ink border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   if (!order) return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div className="text-center">
         <p style={{ fontSize: "0.875rem", color: "#6B6868", marginBottom: "1rem" }}>Sipariş bulunamadı.</p>
         <Link href="/hesabim" className="btn-dark">Hesabıma Dön</Link>
@@ -65,7 +65,7 @@ export default function SiparisDetay() {
   const isShipped = currentStep >= 2
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
 
       <section className="pt-10 pb-8" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

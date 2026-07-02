@@ -19,13 +19,16 @@ export default function FeaturedProducts() {
     <section className="section" style={{ background: "#FFFFFF", borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
 
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-12 lg:mb-16">
           <div>
             <p className="label mb-3">Öne Çıkanlar</p>
             <h2 className="heading-lg">Taze Kavrumlar</h2>
           </div>
-          <Link href="/magazin" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "0.8125rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "#6B6868", textDecoration: "underline", textUnderlineOffset: "3px" }} className="hidden sm:block">
+          <Link href="/magazin"
+            className="hidden sm:inline-flex items-center gap-2 group"
+            style={{ fontFamily: "var(--font-inter)", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#2C2B2B", textDecoration: "none" }}>
             Tümünü Gör
+            <span style={{ transition: "transform 0.2s" }} className="group-hover:translate-x-1 inline-block">→</span>
           </Link>
         </div>
 
@@ -33,17 +36,22 @@ export default function FeaturedProducts() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-7">
             {[...Array(4)].map((_, i) => (
               <div key={i}>
-                <div className="aspect-square mb-3 animate-pulse" style={{ background: "#F5F5F5" }} />
-                <div className="h-3 w-16 mb-2 animate-pulse" style={{ background: "#F5F5F5" }} />
-                <div className="h-4 w-32 mb-1 animate-pulse" style={{ background: "#F5F5F5" }} />
+                <div className="aspect-square mb-4 animate-pulse" style={{ background: "#F0F0F0" }} />
+                <div className="h-2.5 w-12 mb-2.5 animate-pulse rounded" style={{ background: "#F0F0F0" }} />
+                <div className="h-4 w-36 mb-2 animate-pulse rounded" style={{ background: "#F0F0F0" }} />
+                <div className="h-3.5 w-16 animate-pulse rounded" style={{ background: "#F0F0F0" }} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-7">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-8">
             {products.map((p) => <ProductCard key={p.id} {...p} />)}
           </div>
         )}
+
+        <div className="mt-10 sm:hidden text-center">
+          <Link href="/magazin" className="btn-outline">Tüm Kahveleri Gör</Link>
+        </div>
 
       </div>
     </section>
