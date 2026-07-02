@@ -4,6 +4,7 @@ import "./globals.css"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { CartProvider } from "@/lib/cart"
+import TrackVisit from "@/components/TrackVisit"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="tr" className={inter.variable}>
       <body className="antialiased">
         <CartProvider>
+          <TrackVisit />
           <Header />
           <main>{children}</main>
           <Footer />
