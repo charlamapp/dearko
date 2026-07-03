@@ -186,192 +186,288 @@ type AnalyticsCountry = { code: string; name: string; count: number; lat: number
 type AnalyticsVisit   = { country: string; country_name: string; city: string; page: string; created_at: string }
 type AnalyticsData    = { total30d: number; activeNow: number; countries: AnalyticsCountry[]; recent: AnalyticsVisit[]; hourly: number[] }
 
-// Equirectangular world map — 960x480 viewport
-const MAP_W = 960
-const MAP_H = 480
-
-function lngLatToXY(lng: number, lat: number) {
-  return { x: ((lng + 180) / 360) * MAP_W, y: ((90 - lat) / 180) * MAP_H }
+// Simplified continent detection via bounding boxes
+function isLand(lat: number, lng: number): boolean {
+  while (lng > 180) lng -= 360
+  while (lng < -180) lng += 360
+  if (lat < -65) return true                                                          // Antarctica
+  if (lat > 25 && lat < 73 && lng > -140 && lng < -60) return true                  // North America
+  if (lat > 55 && lat < 73 && lng > -168 && lng < -140) return true                 // Alaska
+  if (lat > 15 && lat < 28 && lng > -118 && lng < -86) return true                  // Mexico
+  if (lat > 60 && lat < 84 && lng > -57 && lng < -18) return true                   // Greenland
+  if (lat > -56 && lat < 12 && lng > -82 && lng < -34) return true                  // South America
+  if (lat > 36 && lat < 71 && lng > -10 && lng < 32) return true                    // Europe
+  if (lat > 36 && lat < 42 && lng > 26 && lng < 45) return true                     // Turkey
+  if (lat > -36 && lat < 37 && lng > -18 && lng < 52) return true                   // Africa
+  if (lat > 50 && lat < 78 && lng > 32 && lng < 180) return true                    // Russia / N Asia
+  if (lat > 35 && lat < 50 && lng > 45 && lng < 140) return true                    // Central & E Asia
+  if (lat > 12 && lat < 37 && lng > 35 && lng < 62) return true                     // Arabian Peninsula
+  if (lat > 8 && lat < 35 && lng > 62 && lng < 92) return true                      // India
+  if (lat > 1 && lat < 28 && lng > 92 && lng < 112) return true                     // SE Asia mainland
+  if (lat > -10 && lat < 22 && lng > 95 && lng < 128) return true                   // Indonesia / Philippines
+  if (lat > 30 && lat < 46 && lng > 128 && lng < 146) return true                   // Japan / Korea
+  if (lat > -44 && lat < -10 && lng > 113 && lng < 155) return true                 // Australia
+  if (lat > -47 && lat < -34 && lng > 165 && lng < 178) return true                 // New Zealand
+  return false
 }
 
-const CONTINENT_PATHS = [
-  // North America
-  "M32,51 L104,56 L312,21 L339,115 L267,173 L245,200 L200,187 L165,152 L144,107 L107,85 Z",
-  // South America
-  "M275,213 L387,227 L387,280 L373,315 L307,387 L285,373 L285,253 Z",
-  // Europe
-  "M456,141 L459,80 L493,51 L560,51 L560,80 L560,128 L549,144 L517,144 L467,144 Z",
-  // Africa
-  "M442,144 L579,157 L616,208 L589,272 L576,333 L528,333 L517,299 L480,229 L437,203 Z",
-  // Asia
-  "M549,128 L640,181 L693,219 L725,213 L747,229 L773,240 L800,181 L827,141 L853,128 L933,64 L747,32 L640,40 L613,67 L587,133 Z",
-  // Australia
-  "M781,277 L829,272 L867,277 L888,299 L883,352 L851,349 L795,333 Z",
-  // Greenland
-  "M333,17 L416,17 L408,80 L333,67 Z",
-  // British Isles (small)
-  "M459,88 L467,84 L471,99 L462,103 Z",
-]
+// ── 3D Globe (Canvas, orthographic projection) ────────────────────────────────
+function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
+  const canvasRef   = useRef<HTMLCanvasElement>(null)
+  const lngRef      = useRef(30)          // current center longitude (rotates)
+  const rafRef      = useRef<number>(0)
+  const lastRef     = useRef(0)
+  const visitorsRef = useRef(visitors)
+  useEffect(() => { visitorsRef.current = visitors }, [visitors])
 
+  useEffect(() => {
+    function draw() {
+      const cv = canvasRef.current
+      if (!cv) return
+      const ctx = cv.getContext("2d")!
+      const S = cv.width
+      const cx = S / 2, cy = S / 2
+      const R = S / 2 - 6
+
+      ctx.clearRect(0, 0, S, S)
+
+      // ── Sphere background ──────────────────────────────────────────────────
+      const bg = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.25, 0, cx, cy, R)
+      bg.addColorStop(0,   "#eef8fd")
+      bg.addColorStop(0.7, "#d2ebf7")
+      bg.addColorStop(1,   "#b8dff0")
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = bg; ctx.fill()
+
+      // ── Hex dot grid via inverse orthographic projection ───────────────────
+      const PHI1  = 18 * Math.PI / 180   // center latitude (slight north tilt)
+      const LAM0  = lngRef.current * Math.PI / 180
+      const sp    = Math.max(4.5, R / 36) // dot grid spacing
+
+      const rows = Math.ceil(R / sp) + 2
+      for (let ri = -rows; ri <= rows; ri++) {
+        const yr = ri * sp
+        const cols = Math.ceil(R / sp) + 2
+        for (let ci = -cols; ci <= cols; ci++) {
+          const xr = ci * sp + (((ri % 2) + 2) % 2 === 0 ? 0 : sp * 0.5)
+          const d2 = xr * xr + yr * yr
+          if (d2 >= R * R) continue
+          const d    = Math.sqrt(d2)
+          const norm = d / R
+          const c    = Math.asin(norm)
+          let phi: number, lam: number
+          if (d < 1e-4) { phi = PHI1; lam = LAM0 }
+          else {
+            const cosC = Math.cos(c), sinC = Math.sin(c)
+            phi = Math.asin(Math.min(1, Math.max(-1,
+              cosC * Math.sin(PHI1) + (-yr / d) * sinC * Math.cos(PHI1))))
+            lam = LAM0 + Math.atan2(xr * sinC,
+              d * Math.cos(PHI1) * cosC + yr * Math.sin(PHI1) * sinC)
+          }
+          const lat = phi * 180 / Math.PI
+          let  lng  = lam * 180 / Math.PI
+          while (lng >  180) lng -= 360
+          while (lng < -180) lng += 360
+
+          const ef = Math.sqrt(1 - norm * norm)     // edge falloff
+          const dr = sp * 0.38 * ef
+          if (dr < 0.28) continue
+
+          const land = isLand(lat, lng)
+          ctx.beginPath()
+          ctx.arc(cx + xr, cy + yr, dr, 0, Math.PI * 2)
+          ctx.fillStyle = land
+            ? `rgba(92,173,212,${(0.55 + 0.35 * ef).toFixed(2)})`
+            : `rgba(175,218,240,${(0.10 + 0.12 * ef).toFixed(2)})`
+          ctx.fill()
+        }
+      }
+
+      // ── Visitor pins ───────────────────────────────────────────────────────
+      const PHI1_V = 18 * Math.PI / 180
+      for (const v of visitorsRef.current) {
+        const phi = v.lat * Math.PI / 180
+        const lam = v.lng * Math.PI / 180
+        const cosC = Math.sin(PHI1_V) * Math.sin(phi) + Math.cos(PHI1_V) * Math.cos(phi) * Math.cos(lam - LAM0)
+        if (cosC <= 0.06) continue   // on the back hemisphere
+
+        const px = R * Math.cos(phi) * Math.sin(lam - LAM0)
+        const py = R * (Math.cos(PHI1_V) * Math.sin(phi) - Math.sin(PHI1_V) * Math.cos(phi) * Math.cos(lam - LAM0))
+        const sx = cx + px, sy = cy - py
+
+        const pr = Math.min(11, 5 + Math.log2(Math.max(1, v.count)) * 1.6)
+
+        // outer glow
+        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 3.5)
+        grd.addColorStop(0, "rgba(44,126,192,0.5)")
+        grd.addColorStop(1, "rgba(44,126,192,0)")
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 3.5, 0, Math.PI * 2)
+        ctx.fillStyle = grd; ctx.fill()
+
+        // dot
+        ctx.beginPath(); ctx.arc(sx, sy, pr, 0, Math.PI * 2)
+        ctx.fillStyle = "#2C7EC0"; ctx.fill()
+
+        // white center
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 0.38, 0, Math.PI * 2)
+        ctx.fillStyle = "#ffffff"; ctx.fill()
+      }
+
+      // ── Sphere glass highlight ─────────────────────────────────────────────
+      const hl = ctx.createRadialGradient(cx - R * 0.28, cy - R * 0.32, 0, cx, cy, R)
+      hl.addColorStop(0,   "rgba(255,255,255,0.48)")
+      hl.addColorStop(0.5, "rgba(255,255,255,0.06)")
+      hl.addColorStop(1,   "rgba(255,255,255,0)")
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = hl; ctx.fill()
+
+      // ── Edge shadow ────────────────────────────────────────────────────────
+      const es = ctx.createRadialGradient(cx, cy, R * 0.78, cx, cy, R)
+      es.addColorStop(0, "rgba(10,60,110,0)")
+      es.addColorStop(1, "rgba(10,60,110,0.20)")
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = es; ctx.fill()
+    }
+
+    function animate(now: number) {
+      const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0
+      lastRef.current = now
+      lngRef.current  = (lngRef.current - dt * 4) % 360
+      draw()
+      rafRef.current  = requestAnimationFrame(animate)
+    }
+    rafRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])   // runs once; reads visitors via ref
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={500}
+      height={500}
+      style={{ width: "100%", maxWidth: 500, display: "block", margin: "0 auto" }}
+    />
+  )
+}
+
+// ── AnalitikSection ────────────────────────────────────────────────────────────
 function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
-  const [data, setData]     = useState<AnalyticsData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data,       setData]       = useState<AnalyticsData | null>(null)
+  const [loading,    setLoading]    = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
   async function load() {
     try {
       const r = await fetch("/api/admin/analytics", { headers: { "x-admin-pw": ADMIN_PASSWORD } })
       if (r.ok) { setData(await r.json()); setLastUpdate(new Date()) }
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
-
-  useEffect(() => {
-    load()
-    const t = setInterval(load, 30_000)
-    return () => clearInterval(t)
-  }, [])
+  useEffect(() => { load(); const t = setInterval(load, 30_000); return () => clearInterval(t) }, [])
 
   const maxCount = data?.countries?.[0]?.count ?? 1
 
   return (
     <div>
+      {/* Header */}
       <div className="flex items-end justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div>
           <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "1.4rem", fontWeight: 800, textTransform: "uppercase", color: "#2C2B2B" }}>Analitik</h1>
-          <p style={{ fontSize: "0.8125rem", color: "#6B6868", marginTop: "0.35rem" }}>Gerçek zamanlı ziyaretçi haritası — her 30 saniyede güncellenir.</p>
+          <p style={{ fontSize: "0.8125rem", color: "#6B6868", marginTop: "0.35rem" }}>Gerçek zamanlı ziyaretçi haritası — 30 saniyede güncellenir.</p>
         </div>
         {lastUpdate && (
-          <p style={{ fontSize: "0.72rem", color: "#A0A0A0", fontFamily: "var(--font-inter)" }}>
-            Son güncelleme: {lastUpdate.toLocaleTimeString("tr-TR")}
+          <p style={{ fontSize: "0.7rem", color: "#A0A0A0", fontFamily: "var(--font-inter)" }}>
+            Güncellendi: {lastUpdate.toLocaleTimeString("tr-TR")}
           </p>
         )}
       </div>
 
-      {/* ── Stat cards ── */}
-      <div className="grid grid-cols-3 gap-5 mb-8">
-        {[
-          { label: "Aktif Şimdi", value: loading ? "—" : (data?.activeNow ?? 0), sub: "son 5 dakika", live: true },
-          { label: "Bu Ay", value: loading ? "—" : (data?.total30d ?? 0).toLocaleString("tr-TR"), sub: "son 30 gün" },
-          { label: "Ülke", value: loading ? "—" : (data?.countries?.length ?? 0), sub: "farklı kaynak" },
-        ].map(({ label, value, sub, live }) => (
-          <div key={label} style={{ border: "1px solid #E8E8E8", padding: "1.25rem 1.5rem" }}>
-            <div className="flex items-center gap-2 mb-1">
-              {live && (
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.6)", display: "inline-block", animation: "pulse 2s infinite" }} />
-              )}
-              <p className="label">{label}</p>
+      {/* Two-column layout — Shopify style */}
+      <div style={{ display: "flex", gap: "2.5rem", alignItems: "flex-start" }}>
+
+        {/* ── LEFT: stats + tables ────────────────────────────────────────── */}
+        <div style={{ flex: "0 0 42%", minWidth: 0 }}>
+
+          {/* Stat cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem", marginBottom: "1.75rem" }}>
+
+            {/* Active now — full width */}
+            <div style={{ gridColumn: "1 / -1", border: "1px solid #E8E8E8", padding: "1.1rem 1.35rem", background: "#FAFAFA" }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.7)", display: "inline-block" }} />
+                <p className="label">Şu Anki Ziyaretçiler</p>
+              </div>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "2.4rem", fontWeight: 900, color: "#2C2B2B", lineHeight: 1 }}>
+                {loading ? "—" : (data?.activeNow ?? 0)}
+              </p>
+              <p style={{ fontSize: "0.72rem", color: "#8A8A8A", marginTop: "0.3rem" }}>son 5 dakika içinde</p>
             </div>
-            <p style={{ fontFamily: "var(--font-inter)", fontSize: "2rem", fontWeight: 800, color: "#2C2B2B", lineHeight: 1 }}>{value}</p>
-            <p style={{ fontSize: "0.75rem", color: "#8A8A8A", marginTop: "0.3rem" }}>{sub}</p>
+
+            {[
+              { label: "Bu Ay", value: loading ? "—" : (data?.total30d ?? 0).toLocaleString("tr-TR"), sub: "son 30 gün" },
+              { label: "Ülke",  value: loading ? "—" : (data?.countries?.length ?? 0),                 sub: "farklı kaynak" },
+            ].map(({ label, value, sub }) => (
+              <div key={label} style={{ border: "1px solid #E8E8E8", padding: "1rem 1.2rem" }}>
+                <p className="label mb-1.5">{label}</p>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "1.75rem", fontWeight: 800, color: "#2C2B2B", lineHeight: 1 }}>{value}</p>
+                <p style={{ fontSize: "0.7rem", color: "#8A8A8A", marginTop: "0.25rem" }}>{sub}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* ── World Map ── */}
-      <div style={{ background: "#0a1628", borderRadius: 2, overflow: "hidden", marginBottom: "2rem", position: "relative" }}>
-        <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ width: "100%", display: "block" }}>
-          {/* Grid lines — lat lines */}
-          {[60, 30, 0, -30, -60].map((lat) => {
-            const y = ((90 - lat) / 180) * MAP_H
-            return <line key={lat} x1="0" y1={y} x2={MAP_W} y2={y} stroke="#112240" strokeWidth={lat === 0 ? 1.2 : 0.7} />
-          })}
-          {/* Grid lines — lng lines */}
-          {[-120, -60, 0, 60, 120].map((lng) => {
-            const x = ((lng + 180) / 360) * MAP_W
-            return <line key={lng} x1={x} y1="0" x2={x} y2={MAP_H} stroke="#112240" strokeWidth="0.7" />
-          })}
-
-          {/* Continents */}
-          {CONTINENT_PATHS.map((d, i) => (
-            <path key={i} d={d} fill="#16305c" stroke="#1e4080" strokeWidth="1.2" />
-          ))}
-
-          {/* Visitor dots */}
-          {data?.countries?.map((c) => {
-            const { x, y } = lngLatToXY(c.lng, c.lat)
-            const r = Math.min(Math.max(4, Math.sqrt(c.count / maxCount) * 18), 20)
-            return (
-              <g key={c.code}>
-                <circle cx={x} cy={y} r={r * 2.5} fill="#5CADD4" opacity="0.08" />
-                <circle cx={x} cy={y} r={r * 1.4} fill="#5CADD4" opacity="0.18" />
-                <circle cx={x} cy={y} r={r} fill="#5CADD4" opacity="0.85" />
-                <circle cx={x} cy={y} r={2.5} fill="#ffffff" opacity="0.95" />
-              </g>
-            )
-          })}
-        </svg>
-
-        {/* Live badge */}
-        <div style={{ position: "absolute", top: 12, right: 14, display: "flex", alignItems: "center", gap: 7, background: "rgba(10,22,40,0.75)", padding: "5px 12px", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)" }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.8)", display: "inline-block" }} />
-          <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.1em" }}>CANLI</span>
-        </div>
-
-        {/* Legend */}
-        <div style={{ position: "absolute", bottom: 14, left: 14, display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#5CADD4", opacity: 0.9 }} />
-          <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.05em" }}>ZİYARETÇİ KONUMU</span>
-        </div>
-      </div>
-
-      {/* ── Bottom panels ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        {/* Top countries */}
-        <div>
-          <p className="label mb-5">En Çok Ziyaret Eden Ülkeler</p>
+          {/* Top countries */}
+          <p className="label mb-4">Konuma Göre Oturumlar</p>
           {loading ? (
-            <div className="space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-8 animate-pulse" style={{ background: "#F0F0F0" }} />)}</div>
+            <div className="space-y-2.5">{[...Array(6)].map((_, i) => <div key={i} className="h-7 animate-pulse" style={{ background: "#F0F0F0" }} />)}</div>
           ) : data?.countries?.length === 0 ? (
-            <p style={{ fontSize: "0.875rem", color: "#8A8A8A" }}>Henüz veri yok. Ziyaretçiler gelince burada görünecek.</p>
+            <p style={{ fontSize: "0.8rem", color: "#8A8A8A" }}>Henüz veri yok — ziyaretçiler gelince burada görünecek.</p>
           ) : (
             <div className="space-y-2">
-              {data?.countries?.slice(0, 10).map((c, i) => {
+              {data?.countries?.slice(0, 8).map((c, i) => {
                 const pct = Math.round((c.count / maxCount) * 100)
                 return (
                   <div key={c.code}>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, color: "#A0A0A0", width: 18, textAlign: "right" }}>{i + 1}</span>
-                      <span style={{ fontSize: "0.875rem", color: "#2C2B2B", flex: 1 }}>{c.name}</span>
-                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700, color: "#5CADD4" }}>{c.count.toLocaleString("tr-TR")}</span>
+                    <div className="flex items-center gap-2.5 mb-1">
+                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.68rem", fontWeight: 700, color: "#A0A0A0", width: 14, textAlign: "right", flexShrink: 0 }}>{i + 1}</span>
+                      <span style={{ fontSize: "0.8rem", color: "#2C2B2B", flex: 1 }}>{c.name}</span>
+                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#5CADD4", flexShrink: 0 }}>{c.count}</span>
                     </div>
-                    <div style={{ marginLeft: 30, height: 3, background: "#F0F0F0" }}>
-                      <div style={{ height: "100%", width: `${pct}%`, background: "#5CADD4", transition: "width 0.6s ease" }} />
+                    <div style={{ marginLeft: 22, height: 2.5, background: "#EEF0F2", borderRadius: 2 }}>
+                      <div style={{ height: "100%", width: `${pct}%`, background: "#5CADD4", borderRadius: 2, transition: "width 0.6s ease" }} />
                     </div>
                   </div>
                 )
               })}
             </div>
           )}
+
+          {/* Recent visits */}
+          {(data?.recent?.length ?? 0) > 0 && (
+            <>
+              <p className="label mt-7 mb-4">Son Ziyaretler</p>
+              <div style={{ border: "1px solid #E8E8E8" }}>
+                {data!.recent.slice(0, 10).map((v, i) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2"
+                    style={{ borderBottom: i < 9 ? "1px solid #F5F5F5" : "none" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#5CADD4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.page}</span>
+                    <span style={{ fontSize: "0.72rem", color: "#6B6868", flexShrink: 0 }}>{v.city ? `${v.city}, ` : ""}{v.country_name ?? v.country}</span>
+                    <span style={{ fontSize: "0.65rem", color: "#B0B0B0", fontFamily: "var(--font-inter)", flexShrink: 0 }}>
+                      {new Date(v.created_at).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Recent visits */}
-        <div>
-          <p className="label mb-5">Son Ziyaretler</p>
-          {loading ? (
-            <div className="space-y-3">{[...Array(8)].map((_, i) => <div key={i} className="h-8 animate-pulse" style={{ background: "#F0F0F0" }} />)}</div>
-          ) : data?.recent?.length === 0 ? (
-            <p style={{ fontSize: "0.875rem", color: "#8A8A8A" }}>Henüz ziyaret kaydı yok.</p>
-          ) : (
-            <div style={{ border: "1px solid #E8E8E8" }}>
-              {data?.recent?.slice(0, 12).map((v, i) => (
-                <div key={i} className="flex items-center gap-3 px-4 py-2.5"
-                  style={{ borderBottom: i < 11 ? "1px solid #F0F0F0" : "none" }}>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.78rem", fontWeight: 600, color: "#5CADD4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {v.page}
-                  </span>
-                  <span style={{ fontSize: "0.78rem", color: "#6B6868", flexShrink: 0 }}>
-                    {v.city ? `${v.city}, ` : ""}{v.country_name ?? v.country}
-                  </span>
-                  <span style={{ fontSize: "0.7rem", color: "#A0A0A0", fontFamily: "var(--font-inter)", flexShrink: 0 }}>
-                    {new Date(v.created_at).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* ── RIGHT: 3D Globe ─────────────────────────────────────────────── */}
+        <div style={{ flex: 1, minWidth: 0, position: "relative" }}>
+          {/* Live badge */}
+          <div style={{ position: "absolute", top: 16, right: 16, zIndex: 10, display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.85)", padding: "4px 11px", backdropFilter: "blur(8px)", border: "1px solid rgba(92,173,212,0.25)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 7px rgba(34,197,94,0.8)", display: "inline-block" }} />
+            <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, color: "#2C2B2B", letterSpacing: "0.1em" }}>CANLI</span>
+          </div>
+          <GlobeCanvas visitors={data?.countries ?? []} />
+          <p style={{ textAlign: "center", fontSize: "0.7rem", color: "#C0C0C0", fontFamily: "var(--font-inter)", marginTop: "0.5rem" }}>
+            Dönen küre — ziyaretçi konumları mavi nokta olarak görünür
+          </p>
         </div>
 
       </div>
