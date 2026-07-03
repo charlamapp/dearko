@@ -186,62 +186,130 @@ type AnalyticsCountry = { code: string; name: string; count: number; lat: number
 type AnalyticsVisit   = { country: string; country_name: string; city: string; page: string; created_at: string }
 type AnalyticsData    = { total30d: number; activeNow: number; countries: AnalyticsCountry[]; recent: AnalyticsVisit[]; hourly: number[] }
 
-// Simplified continent detection via bounding boxes
+// Continent detection — bounding boxes + key ocean exclusions
 function isLand(lat: number, lng: number): boolean {
   while (lng > 180) lng -= 360
   while (lng < -180) lng += 360
-  if (lat < -65) return true                                                          // Antarctica
-  if (lat > 25 && lat < 73 && lng > -140 && lng < -60) return true                  // North America
-  if (lat > 55 && lat < 73 && lng > -168 && lng < -140) return true                 // Alaska
-  if (lat > 15 && lat < 28 && lng > -118 && lng < -86) return true                  // Mexico
-  if (lat > 60 && lat < 84 && lng > -57 && lng < -18) return true                   // Greenland
-  if (lat > -56 && lat < 12 && lng > -82 && lng < -34) return true                  // South America
-  if (lat > 36 && lat < 71 && lng > -10 && lng < 32) return true                    // Europe
-  if (lat > 36 && lat < 42 && lng > 26 && lng < 45) return true                     // Turkey
-  if (lat > -36 && lat < 37 && lng > -18 && lng < 52) return true                   // Africa
-  if (lat > 50 && lat < 78 && lng > 32 && lng < 180) return true                    // Russia / N Asia
-  if (lat > 35 && lat < 50 && lng > 45 && lng < 140) return true                    // Central & E Asia
-  if (lat > 12 && lat < 37 && lng > 35 && lng < 62) return true                     // Arabian Peninsula
-  if (lat > 8 && lat < 35 && lng > 62 && lng < 92) return true                      // India
-  if (lat > 1 && lat < 28 && lng > 92 && lng < 112) return true                     // SE Asia mainland
-  if (lat > -10 && lat < 22 && lng > 95 && lng < 128) return true                   // Indonesia / Philippines
-  if (lat > 30 && lat < 46 && lng > 128 && lng < 146) return true                   // Japan / Korea
-  if (lat > -44 && lat < -10 && lng > 113 && lng < 155) return true                 // Australia
-  if (lat > -47 && lat < -34 && lng > 165 && lng < 178) return true                 // New Zealand
+  if (lat < -62) return true                                        // Antarctica
+  // North America (with ocean exclusions)
+  if (lat > 25 && lat < 73 && lng > -140 && lng < -60) {
+    if (lat < 31 && lng > -98 && lng < -80) return false           // Gulf of Mexico
+    if (lat > 52 && lat < 65 && lng > -95 && lng < -78) return false // Hudson Bay
+    return true
+  }
+  if (lat > 55 && lat < 73 && lng > -168 && lng < -140) return true // Alaska
+  if (lat > 15 && lat < 28 && lng > -118 && lng < -86) return true  // Mexico
+  if (lat > 60 && lat < 84 && lng > -57 && lng < -18) return true   // Greenland
+  if (lat > -56 && lat < 12 && lng > -82 && lng < -34) return true  // South America
+  // Europe
+  if (lat > 36 && lat < 71 && lng > -10 && lng < 32) {
+    if (lat < 46 && lat > 30 && lng > 6 && lng < 22) return false   // Mediterranean
+    return true
+  }
+  if (lat > 36 && lat < 42 && lng > 26 && lng < 45) return true     // Turkey
+  // Africa (exclude Red Sea)
+  if (lat > -36 && lat < 37 && lng > -18 && lng < 52) {
+    if (lat > 12 && lat < 30 && lng > 32 && lng < 44) return false  // Red Sea
+    return true
+  }
+  // Russia / N Asia (exclude Caspian)
+  if (lat > 50 && lat < 78 && lng > 32 && lng < 180) {
+    if (lat > 36 && lat < 48 && lng > 49 && lng < 55) return false  // Caspian Sea
+    return true
+  }
+  // Central & E Asia (exclude Caspian + Persian Gulf)
+  if (lat > 35 && lat < 50 && lng > 45 && lng < 140) {
+    if (lat > 36 && lat < 48 && lng > 49 && lng < 55) return false  // Caspian
+    return true
+  }
+  // Arabian Peninsula (exclude Persian Gulf + Red Sea)
+  if (lat > 12 && lat < 32 && lng > 35 && lng < 62) {
+    if (lat > 24 && lat < 30 && lng > 48 && lng < 57) return false  // Persian Gulf
+    if (lat > 12 && lat < 30 && lng > 32 && lng < 44) return false  // Red Sea
+    return true
+  }
+  // India (exclude Bay of Bengal)
+  if (lat > 8 && lat < 35 && lng > 62 && lng < 92) {
+    if (lat > 8 && lat < 22 && lng > 80 && lng < 92) return false   // Bay of Bengal
+    return true
+  }
+  if (lat > 1 && lat < 28 && lng > 92 && lng < 112) return true     // SE Asia mainland
+  // Indonesia / Philippines (exclude South China Sea)
+  if (lat > -10 && lat < 22 && lng > 95 && lng < 128) {
+    if (lat > 5 && lat < 21 && lng > 110 && lng < 122) return false // South China Sea
+    return true
+  }
+  if (lat > 30 && lat < 46 && lng > 128 && lng < 146) return true   // Japan / Korea
+  if (lat > -44 && lat < -10 && lng > 113 && lng < 155) return true // Australia
+  if (lat > -47 && lat < -34 && lng > 165 && lng < 178) return true // New Zealand
   return false
 }
 
-// ── 3D Globe (Canvas, orthographic projection) ────────────────────────────────
+// ── 3D Globe — Canvas + orthographic projection + mouse drag ─────────────────
 function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
-  const canvasRef   = useRef<HTMLCanvasElement>(null)
-  const lngRef      = useRef(30)          // current center longitude (rotates)
-  const rafRef      = useRef<number>(0)
-  const lastRef     = useRef(0)
-  const visitorsRef = useRef(visitors)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const lngRef       = useRef(30)     // center longitude
+  const latTiltRef   = useRef(18)     // center latitude (mouse-adjustable)
+  const rafRef       = useRef<number>(0)
+  const lastRef      = useRef(0)
+  const visitorsRef  = useRef(visitors)
+  const dragging     = useRef(false)
+  const autoRotate   = useRef(true)
+  const resumeTimer  = useRef<ReturnType<typeof setTimeout>>()
+  const lastMouse    = useRef({ x: 0, y: 0 })
+
   useEffect(() => { visitorsRef.current = visitors }, [visitors])
 
+  // ── drag helpers ────────────────────────────────────────────────────────────
+  function startDrag(x: number, y: number) {
+    dragging.current = true
+    autoRotate.current = false
+    lastMouse.current = { x, y }
+    clearTimeout(resumeTimer.current)
+    const cv = canvasRef.current
+    if (cv) cv.style.cursor = "grabbing"
+  }
+  function moveDrag(x: number, y: number) {
+    if (!dragging.current) return
+    const dx = x - lastMouse.current.x
+    const dy = y - lastMouse.current.y
+    lngRef.current     = (lngRef.current - dx * 0.35) % 360
+    latTiltRef.current = Math.max(-50, Math.min(55, latTiltRef.current + dy * 0.25))
+    lastMouse.current  = { x, y }
+  }
+  function endDrag() {
+    dragging.current = false
+    const cv = canvasRef.current
+    if (cv) cv.style.cursor = "grab"
+    clearTimeout(resumeTimer.current)
+    resumeTimer.current = setTimeout(() => { autoRotate.current = true }, 2500)
+  }
+
   useEffect(() => {
+    const cv = canvasRef.current
+    if (!cv) return
+    cv.style.cursor = "grab"
+
     function draw() {
-      const cv = canvasRef.current
-      if (!cv) return
-      const ctx = cv.getContext("2d")!
-      const S = cv.width
+      const ctx = cv!.getContext("2d")!
+      const S = cv!.width
       const cx = S / 2, cy = S / 2
-      const R = S / 2 - 6
+      const R = S / 2 - 8
 
       ctx.clearRect(0, 0, S, S)
 
-      // ── Sphere background ──────────────────────────────────────────────────
-      const bg = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.25, 0, cx, cy, R)
-      bg.addColorStop(0,   "#f9fdff")   // almost white center
-      bg.addColorStop(0.6, "#eaf5fb")   // very light blue
-      bg.addColorStop(1,   "#d0eaf7")   // light blue edge
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = bg; ctx.fill()
+      // ── Sphere base ──────────────────────────────────────────────────────
+      const bg = ctx.createRadialGradient(cx - R * 0.18, cy - R * 0.22, 0, cx, cy, R)
+      bg.addColorStop(0,   "#fafeff")
+      bg.addColorStop(0.55,"#edf6fd")
+      bg.addColorStop(1,   "#cde8f5")
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2)
+      ctx.fillStyle = bg; ctx.fill()
 
-      // ── Hex dot grid via inverse orthographic projection ───────────────────
-      const PHI1  = 18 * Math.PI / 180   // center latitude (slight north tilt)
-      const LAM0  = lngRef.current * Math.PI / 180
-      const sp    = Math.max(4.5, R / 36) // dot grid spacing
+      // ── Hex dot grid ─────────────────────────────────────────────────────
+      const PHI1 = latTiltRef.current * Math.PI / 180
+      const LAM0 = lngRef.current * Math.PI / 180
+      const sp   = Math.max(5, R / 32)   // spacing — larger = bigger, more Shopify-like dots
 
       const rows = Math.ceil(R / sp) + 2
       for (let ri = -rows; ri <= rows; ri++) {
@@ -268,85 +336,87 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
           while (lng >  180) lng -= 360
           while (lng < -180) lng += 360
 
-          const ef = Math.sqrt(1 - norm * norm)     // edge falloff
-          const dr = sp * 0.40 * ef
-          if (dr < 0.28) continue
+          const ef = Math.sqrt(1 - norm * norm)
+          const dr = sp * 0.43 * ef      // slightly larger dot ratio
+          if (dr < 0.3) continue
 
           const land = isLand(lat, lng)
           ctx.beginPath()
           ctx.arc(cx + xr, cy + yr, dr, 0, Math.PI * 2)
+          // Shopify-like bright teal for land, near-invisible for ocean
           ctx.fillStyle = land
-            ? `rgba(56,148,206,${(0.70 + 0.25 * ef).toFixed(2)})`   // strong teal — clearly visible
-            : `rgba(180,220,240,${(0.04 + 0.05 * ef).toFixed(2)})`   // near-invisible ocean
+            ? `rgba(62,193,195,${(0.72 + 0.22 * ef).toFixed(2)})`
+            : `rgba(185,225,242,${(0.04 + 0.04 * ef).toFixed(2)})`
           ctx.fill()
         }
       }
 
-      // ── Visitor pins ───────────────────────────────────────────────────────
-      const PHI1_V = 18 * Math.PI / 180
+      // ── Visitor pins ─────────────────────────────────────────────────────
       for (const v of visitorsRef.current) {
         const phi = v.lat * Math.PI / 180
         const lam = v.lng * Math.PI / 180
-        const cosC = Math.sin(PHI1_V) * Math.sin(phi) + Math.cos(PHI1_V) * Math.cos(phi) * Math.cos(lam - LAM0)
-        if (cosC <= 0.06) continue   // on the back hemisphere
+        const cosC = Math.sin(PHI1) * Math.sin(phi) + Math.cos(PHI1) * Math.cos(phi) * Math.cos(lam - LAM0)
+        if (cosC <= 0.06) continue
 
         const px = R * Math.cos(phi) * Math.sin(lam - LAM0)
-        const py = R * (Math.cos(PHI1_V) * Math.sin(phi) - Math.sin(PHI1_V) * Math.cos(phi) * Math.cos(lam - LAM0))
+        const py = R * (Math.cos(PHI1) * Math.sin(phi) - Math.sin(PHI1) * Math.cos(phi) * Math.cos(lam - LAM0))
         const sx = cx + px, sy = cy - py
+        const pr = Math.min(13, 6 + Math.log2(Math.max(1, v.count)) * 2)
 
-        const pr = Math.min(11, 5 + Math.log2(Math.max(1, v.count)) * 1.6)
-
-        // outer glow
-        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 4)
-        grd.addColorStop(0, "rgba(92,173,212,0.6)")
+        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 4.5)
+        grd.addColorStop(0, "rgba(92,173,212,0.55)")
         grd.addColorStop(1, "rgba(92,173,212,0)")
-        ctx.beginPath(); ctx.arc(sx, sy, pr * 4, 0, Math.PI * 2)
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 4.5, 0, Math.PI * 2)
         ctx.fillStyle = grd; ctx.fill()
 
-        // pulse ring
-        ctx.beginPath(); ctx.arc(sx, sy, pr * 1.8, 0, Math.PI * 2)
-        ctx.strokeStyle = "rgba(92,173,212,0.5)"; ctx.lineWidth = 1.5; ctx.stroke()
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 2, 0, Math.PI * 2)
+        ctx.strokeStyle = "rgba(92,173,212,0.35)"; ctx.lineWidth = 1.5; ctx.stroke()
 
-        // dot
         ctx.beginPath(); ctx.arc(sx, sy, pr, 0, Math.PI * 2)
         ctx.fillStyle = "#5CADD4"; ctx.fill()
 
-        // white center
         ctx.beginPath(); ctx.arc(sx, sy, pr * 0.38, 0, Math.PI * 2)
-        ctx.fillStyle = "#ffffff"; ctx.fill()
+        ctx.fillStyle = "#fff"; ctx.fill()
       }
 
-      // ── Sphere glass highlight ─────────────────────────────────────────────
-      const hl = ctx.createRadialGradient(cx - R * 0.28, cy - R * 0.32, 0, cx, cy, R)
-      hl.addColorStop(0,   "rgba(255,255,255,0.48)")
-      hl.addColorStop(0.5, "rgba(255,255,255,0.06)")
+      // ── Glass highlight ───────────────────────────────────────────────────
+      const hl = ctx.createRadialGradient(cx - R * 0.28, cy - R * 0.3, 0, cx, cy, R)
+      hl.addColorStop(0,   "rgba(255,255,255,0.50)")
+      hl.addColorStop(0.5, "rgba(255,255,255,0.07)")
       hl.addColorStop(1,   "rgba(255,255,255,0)")
       ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = hl; ctx.fill()
 
-      // ── Edge shadow ────────────────────────────────────────────────────────
-      const es = ctx.createRadialGradient(cx, cy, R * 0.78, cx, cy, R)
-      es.addColorStop(0, "rgba(10,60,110,0)")
-      es.addColorStop(1, "rgba(10,60,110,0.20)")
+      // ── Edge vignette ─────────────────────────────────────────────────────
+      const es = ctx.createRadialGradient(cx, cy, R * 0.75, cx, cy, R)
+      es.addColorStop(0, "rgba(8,55,105,0)")
+      es.addColorStop(1, "rgba(8,55,105,0.18)")
       ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = es; ctx.fill()
     }
 
     function animate(now: number) {
       const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0
       lastRef.current = now
-      lngRef.current  = (lngRef.current - dt * 4) % 360
+      if (autoRotate.current) lngRef.current = (lngRef.current - dt * 5) % 360
       draw()
-      rafRef.current  = requestAnimationFrame(animate)
+      rafRef.current = requestAnimationFrame(animate)
     }
     rafRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [])   // runs once; reads visitors via ref
+    return () => { cancelAnimationFrame(rafRef.current); clearTimeout(resumeTimer.current) }
+  }, [])
 
   return (
     <canvas
       ref={canvasRef}
-      width={500}
-      height={500}
-      style={{ width: "100%", maxWidth: 500, display: "block", margin: "0 auto" }}
+      width={520}
+      height={520}
+      style={{ width: "100%", maxWidth: 520, display: "block", margin: "0 auto", userSelect: "none" }}
+      onMouseDown={(e) => startDrag(e.clientX, e.clientY)}
+      onMouseMove={(e) => moveDrag(e.clientX, e.clientY)}
+      onMouseUp={endDrag}
+      onMouseLeave={endDrag}
+      onTouchStart={(e) => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY) }}
+      onTouchMove={(e)  => { e.preventDefault(); moveDrag(e.touches[0].clientX,  e.touches[0].clientY) }}
+      onTouchEnd={endDrag}
     />
   )
 }
