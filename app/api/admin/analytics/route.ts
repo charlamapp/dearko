@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
 
   const [totalRes, activeRes, viewsRes, recentRes, hourlyRes] = await Promise.all([
     sb.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", ago30d),
-    sb.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", ago5m),
+    // Fetch rows with country+city to count *distinct* visitors (not raw page views)
+    sb.from("page_views").select("country, city").gte("created_at", ago5m),
     sb.from("page_views")
       .select("country, country_name, lat, lng")
       .gte("created_at", ago30d)
@@ -55,9 +56,14 @@ export async function GET(req: NextRequest) {
     buckets[h]++
   }
 
+  // Distinct country+city = unique visitor approximation (no session table needed)
+  const activeUnique = new Set(
+    (activeRes.data ?? []).map((r) => `${r.country ?? ""}|${r.city ?? ""}`)
+  ).size
+
   return NextResponse.json({
     total30d: totalRes.count ?? 0,
-    activeNow: activeRes.count ?? 0,
+    activeNow: activeUnique,
     countries: Object.entries(countryMap)
       .map(([code, d]) => ({ code, ...d }))
       .sort((a, b) => b.count - a.count),

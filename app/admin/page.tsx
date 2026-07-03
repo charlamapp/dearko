@@ -233,9 +233,9 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
 
       // ── Sphere background ──────────────────────────────────────────────────
       const bg = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.25, 0, cx, cy, R)
-      bg.addColorStop(0,   "#eef8fd")
-      bg.addColorStop(0.7, "#d2ebf7")
-      bg.addColorStop(1,   "#b8dff0")
+      bg.addColorStop(0,   "#f9fdff")   // almost white center
+      bg.addColorStop(0.6, "#eaf5fb")   // very light blue
+      bg.addColorStop(1,   "#d0eaf7")   // light blue edge
       ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = bg; ctx.fill()
 
       // ── Hex dot grid via inverse orthographic projection ───────────────────
@@ -269,15 +269,15 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
           while (lng < -180) lng += 360
 
           const ef = Math.sqrt(1 - norm * norm)     // edge falloff
-          const dr = sp * 0.38 * ef
+          const dr = sp * 0.40 * ef
           if (dr < 0.28) continue
 
           const land = isLand(lat, lng)
           ctx.beginPath()
           ctx.arc(cx + xr, cy + yr, dr, 0, Math.PI * 2)
           ctx.fillStyle = land
-            ? `rgba(92,173,212,${(0.55 + 0.35 * ef).toFixed(2)})`
-            : `rgba(175,218,240,${(0.10 + 0.12 * ef).toFixed(2)})`
+            ? `rgba(56,148,206,${(0.70 + 0.25 * ef).toFixed(2)})`   // strong teal — clearly visible
+            : `rgba(180,220,240,${(0.04 + 0.05 * ef).toFixed(2)})`   // near-invisible ocean
           ctx.fill()
         }
       }
@@ -297,15 +297,19 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
         const pr = Math.min(11, 5 + Math.log2(Math.max(1, v.count)) * 1.6)
 
         // outer glow
-        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 3.5)
-        grd.addColorStop(0, "rgba(44,126,192,0.5)")
-        grd.addColorStop(1, "rgba(44,126,192,0)")
-        ctx.beginPath(); ctx.arc(sx, sy, pr * 3.5, 0, Math.PI * 2)
+        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 4)
+        grd.addColorStop(0, "rgba(92,173,212,0.6)")
+        grd.addColorStop(1, "rgba(92,173,212,0)")
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 4, 0, Math.PI * 2)
         ctx.fillStyle = grd; ctx.fill()
+
+        // pulse ring
+        ctx.beginPath(); ctx.arc(sx, sy, pr * 1.8, 0, Math.PI * 2)
+        ctx.strokeStyle = "rgba(92,173,212,0.5)"; ctx.lineWidth = 1.5; ctx.stroke()
 
         // dot
         ctx.beginPath(); ctx.arc(sx, sy, pr, 0, Math.PI * 2)
-        ctx.fillStyle = "#2C7EC0"; ctx.fill()
+        ctx.fillStyle = "#5CADD4"; ctx.fill()
 
         // white center
         ctx.beginPath(); ctx.arc(sx, sy, pr * 0.38, 0, Math.PI * 2)
