@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { CartProvider } from "@/lib/cart"
 import TrackVisit from "@/components/TrackVisit"
+import PopupBanner from "@/components/PopupBanner"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <CartProvider>
           <TrackVisit />
+          <PopupBanner />
           <Header />
           <main>{children}</main>
           <Footer />

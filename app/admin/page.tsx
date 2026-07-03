@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
-  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2,
+  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift,
 } from "lucide-react"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
@@ -44,6 +44,7 @@ const emptyProduct: Omit<Product, "id"> = {
 
 const sidebarItems = [
   { id: "analitik",      label: "Analitik",       icon: BarChart2 },
+  { id: "promosyon",     label: "Promosyon",      icon: Gift },
   { id: "products",      label: "Ürünler",        icon: Coffee },
   { id: "siparisler",    label: "Siparişler",     icon: ShoppingBag },
   { id: "rezervasyonlar", label: "Rezervasyonlar", icon: CalendarCheck },
@@ -166,6 +167,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       {/* Main */}
       <main style={{ flex: 1, minWidth: 0, padding: "2.5rem 2rem 4rem" }}>
         {section === "analitik"       && <AnalitikSection      onToast={showToast} />}
+        {section === "promosyon"      && <PromosyonSection     onToast={showToast} />}
         {section === "products"       && <ProductsSection      onToast={showToast} />}
         {section === "siparisler"    && <SiparislerSection    onToast={showToast} />}
         {section === "rezervasyonlar" && <RezervasyonlarSection onToast={showToast} />}
@@ -544,6 +546,142 @@ function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
           </p>
         </div>
 
+      </div>
+    </div>
+  )
+}
+
+// ─── Promosyon Section ───────────────────────────────────────────────────────
+
+type PopupSettings = {
+  enabled: boolean; headline: string; description: string
+  discount_code: string; discount_amount: string; button_text: string; delay_seconds: number
+}
+type Subscriber = { id: string; email: string; discount_code: string; created_at: string }
+
+function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
+  const [settings, setSettings]       = useState<PopupSettings | null>(null)
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([])
+  const [saving, setSaving]           = useState(false)
+  const [loading, setLoading]         = useState(true)
+
+  async function load() {
+    const r = await fetch("/api/admin/popup", { headers: { "x-admin-pw": ADMIN_PASSWORD } })
+    if (r.ok) { const d = await r.json(); setSettings(d.settings); setSubscribers(d.subscribers) }
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  async function save() {
+    if (!settings) return
+    setSaving(true)
+    const r = await fetch("/api/admin/popup", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "x-admin-pw": ADMIN_PASSWORD },
+      body: JSON.stringify(settings),
+    })
+    setSaving(false)
+    if (r.ok) onToast("Popup ayarları kaydedildi ✓")
+  }
+
+  if (loading || !settings) return <div className="animate-pulse" style={{ height: 200, background: "#F5F5F5" }} />
+
+  return (
+    <div>
+      <SectionHeader title="Promosyon Popup" subtitle="Siteye ilk girişte gösterilen indirim popup'ını yönetin." />
+
+      {/* Enable toggle */}
+      <div className="flex items-center justify-between p-4 mb-8" style={{ border: "1px solid #E8E8E8", background: settings.enabled ? "rgba(92,173,212,0.06)" : "#FAFAFA" }}>
+        <div>
+          <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, color: "#2C2B2B" }}>
+            Pop-up {settings.enabled ? "Aktif" : "Kapalı"}
+          </p>
+          <p style={{ fontSize: "0.8rem", color: "#6B6868", marginTop: 2 }}>
+            {settings.enabled ? "Ziyaretçilere gösteriliyor" : "Şu an gösterilmiyor"}
+          </p>
+        </div>
+        <button
+          onClick={() => setSettings((s) => s ? { ...s, enabled: !s.enabled } : s)}
+          style={{
+            width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer", position: "relative", flexShrink: 0,
+            background: settings.enabled ? "#5CADD4" : "#D0D0D0", transition: "background 0.2s",
+          }}
+        >
+          <span style={{
+            position: "absolute", top: 2, left: settings.enabled ? 22 : 2,
+            width: 20, height: 20, borderRadius: "50%", background: "#fff",
+            transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+          }} />
+        </button>
+      </div>
+
+      {/* Settings form */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+        <Field label="Başlık">
+          <input className="input" value={settings.headline}
+            onChange={(e) => setSettings((s) => s ? { ...s, headline: e.target.value } : s)} />
+        </Field>
+        <Field label="İndirim Miktarı (görünüm)">
+          <input className="input" value={settings.discount_amount} placeholder="%10"
+            onChange={(e) => setSettings((s) => s ? { ...s, discount_amount: e.target.value } : s)} />
+        </Field>
+        <Field label="Açıklama">
+          <textarea rows={3} className="input resize-none" value={settings.description}
+            style={{ paddingTop: "0.75rem" }}
+            onChange={(e) => setSettings((s) => s ? { ...s, description: e.target.value } : s)} />
+        </Field>
+        <div className="space-y-4">
+          <Field label="İndirim Kodu">
+            <input className="input" value={settings.discount_code} placeholder="HOSGELDIN10"
+              onChange={(e) => setSettings((s) => s ? { ...s, discount_code: e.target.value.toUpperCase() } : s)} />
+          </Field>
+          <Field label="Buton Metni">
+            <input className="input" value={settings.button_text} placeholder="Kuponu Al"
+              onChange={(e) => setSettings((s) => s ? { ...s, button_text: e.target.value } : s)} />
+          </Field>
+          <Field label={`Gecikme: ${settings.delay_seconds} saniye`}>
+            <input type="range" min={1} max={15} value={settings.delay_seconds}
+              onChange={(e) => setSettings((s) => s ? { ...s, delay_seconds: +e.target.value } : s)}
+              style={{ width: "100%", accentColor: "#5CADD4" }} />
+          </Field>
+        </div>
+      </div>
+
+      <SaveBtn saving={saving} onClick={save} />
+
+      {/* Subscriber list */}
+      <div style={{ marginTop: "3rem", borderTop: "1px solid #E8E8E8", paddingTop: "2rem" }}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="label-ink">E-posta Aboneleri</p>
+            <p style={{ fontSize: "0.78rem", color: "#8A8A8A", marginTop: 2 }}>Popup üzerinden kaydolan kullanıcılar</p>
+          </div>
+          <span style={{ fontFamily: "var(--font-inter)", fontSize: "1.5rem", fontWeight: 800, color: "#2C2B2B" }}>
+            {subscribers.length}
+          </span>
+        </div>
+
+        {subscribers.length === 0 ? (
+          <p style={{ fontSize: "0.875rem", color: "#8A8A8A" }}>Henüz abone yok.</p>
+        ) : (
+          <div style={{ border: "1px solid #E8E8E8" }}>
+            <div className="flex px-4 py-2.5" style={{ background: "#F8F8F8", borderBottom: "1px solid #E8E8E8" }}>
+              <span className="label flex-1">E-posta</span>
+              <span className="label w-32">Kupon</span>
+              <span className="label w-28">Tarih</span>
+            </div>
+            {subscribers.slice(0, 50).map((sub, i) => (
+              <div key={sub.id} className="flex items-center px-4 py-3"
+                style={{ borderBottom: i < subscribers.length - 1 ? "1px solid #F5F5F5" : "none" }}>
+                <span style={{ fontSize: "0.875rem", color: "#2C2B2B", flex: 1 }}>{sub.email}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#5CADD4", width: 128 }}>{sub.discount_code ?? "—"}</span>
+                <span style={{ fontSize: "0.75rem", color: "#8A8A8A", width: 112 }}>
+                  {new Date(sub.created_at).toLocaleDateString("tr-TR")}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
