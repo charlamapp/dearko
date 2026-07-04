@@ -28,7 +28,7 @@ export default function IletisimPage() {
   ] : []
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
 
       <section className="pt-14 pb-12" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

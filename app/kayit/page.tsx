@@ -47,7 +47,7 @@ export default function KayitPage() {
   }
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: "420px", padding: "2rem" }}>
 
         <div className="mb-10">

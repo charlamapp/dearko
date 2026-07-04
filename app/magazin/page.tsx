@@ -43,7 +43,7 @@ export default function MagazinPage() {
     })
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
 
       {/* Sayfa başlığı */}
       <section className="pt-12 pb-0" style={{ borderBottom: "1px solid #E8E8E8" }}>

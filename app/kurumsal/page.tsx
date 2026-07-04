@@ -15,7 +15,7 @@ export default function KurumsalPage() {
   }, [])
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
 
       <section className="relative overflow-hidden" style={{ minHeight: "60vh", display: "flex", alignItems: "flex-end" }}>
         <img

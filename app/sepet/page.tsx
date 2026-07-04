@@ -35,7 +35,7 @@ export default function SepetPage() {
   }
 
   if (!items.length) return (
-    <div style={{ background: "#FFFFFF", minHeight: "70vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "5.5rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "70vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "6.25rem" }}>
       <p className="label-muted mb-5">Sepet</p>
       <h2 className="heading-md mb-6">Sepetiniz boş.</h2>
       <Link href="/magazin" className="btn-dark">Alışverişe Başla</Link>
@@ -43,7 +43,7 @@ export default function SepetPage() {
   )
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "5.5rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
 
       <div className="pt-14 pb-10" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

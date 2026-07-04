@@ -9,7 +9,7 @@ import PhilosophySection from "@/components/sections/PhilosophySection"
 
 export default function HomePage() {
   return (
-    <div style={{ paddingTop: "5.5rem" }}>
+    <div style={{ paddingTop: "6.25rem" }}>
       <Hero />
       <TrustBar />
       <FeaturedProducts />
