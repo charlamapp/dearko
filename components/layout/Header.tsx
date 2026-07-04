@@ -75,9 +75,10 @@ export default function Header() {
               style={{ color: "#2C2B2B" }} aria-label="Menüyü aç">
               <Menu size={20} strokeWidth={1.75} />
             </button>
-            <nav className="hidden lg:flex items-center gap-0.5">
-              {navLinks.slice(0, 4).map(({ href, label }) => (
-                <Link key={href} href={href} className={pathname === href ? "nav-link-active" : "nav-link"}>
+            <nav className="hidden lg:flex items-center gap-0">
+              {navLinks.map(({ href, label }) => (
+                <Link key={href} href={href} className={pathname === href ? "nav-link-active" : "nav-link"}
+                  style={{ fontSize: "0.775rem" }}>
                   {label}
                 </Link>
               ))}
