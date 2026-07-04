@@ -1,8 +1,9 @@
 import Hero from "@/components/sections/Hero"
 import TrustBar from "@/components/sections/TrustBar"
 import FeaturedProducts from "@/components/sections/FeaturedProducts"
-import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
+import QuizBanner from "@/components/sections/QuizBanner"
 import OriginsSection from "@/components/sections/OriginsSection"
+import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
 import MobileBanner from "@/components/sections/MobileBanner"
 import CorporateBanner from "@/components/sections/CorporateBanner"
 import PhilosophySection from "@/components/sections/PhilosophySection"
@@ -13,6 +14,7 @@ export default function HomePage() {
       <Hero />
       <TrustBar />
       <FeaturedProducts />
+      <QuizBanner />
       <OriginsSection />
       <SubscriptionBanner />
       <MobileBanner />
