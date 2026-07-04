@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import ProductCard from "@/components/ui/ProductCard"
 
 type Product = { id: string; name: string; category: string; price: number; image: string; origin?: string; roast?: string; brand?: string; weight?: string }
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+}
+const item = {
+  hidden: { opacity: 0, y: 32 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] } },
+}
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -19,7 +29,13 @@ export default function FeaturedProducts() {
     <section className="section" style={{ background: "#FFFFFF", borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
 
-        <div className="flex items-end justify-between mb-12 lg:mb-16">
+        <motion.div
+          className="flex items-end justify-between mb-12 lg:mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        >
           <div>
             <p className="label mb-3">Öne Çıkanlar</p>
             <h2 className="heading-lg">Taze Kavrumlar</h2>
@@ -30,7 +46,7 @@ export default function FeaturedProducts() {
             Tümünü Gör
             <span style={{ transition: "transform 0.2s" }} className="group-hover:translate-x-1 inline-block">→</span>
           </Link>
-        </div>
+        </motion.div>
 
         {products.length === 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-7">
@@ -44,9 +60,19 @@ export default function FeaturedProducts() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-8">
-            {products.map((p) => <ProductCard key={p.id} {...p} />)}
-          </div>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-8"
+          >
+            {products.map((p) => (
+              <motion.div key={p.id} variants={item}>
+                <ProductCard {...p} />
+              </motion.div>
+            ))}
+          </motion.div>
         )}
 
         <div className="mt-10 sm:hidden text-center">

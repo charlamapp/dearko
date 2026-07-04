@@ -1,13 +1,31 @@
+"use client"
+
 import Link from "next/link"
 import { Check } from "lucide-react"
+import { motion } from "framer-motion"
 import { subscriptionPlans } from "@/lib/data"
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+}
+const card = {
+  hidden: { opacity: 0, y: 40 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
+}
 
 export default function SubscriptionBanner() {
   return (
     <section className="section" style={{ background: "#F5F5F5", borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
 
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-14">
+        <motion.div
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-14"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        >
           <div>
             <p className="label mb-3">Abonelik</p>
             <h2 className="heading-lg">Taze Kahve,<br />Her Zaman.</h2>
@@ -15,17 +33,26 @@ export default function SubscriptionBanner() {
           <p className="body-lg lg:max-w-sm">
             Siparişten sonra kavrulur, 48 saat içinde kapınızda. İstediğiniz zaman iptal.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10"
+        >
           {subscriptionPlans.map((plan) => (
-            <div
+            <motion.div
               key={plan.id}
+              variants={card}
               className="p-7 flex flex-col relative"
               style={{
                 border: plan.popular ? "2px solid #5CADD4" : "1px solid #E8E8E8",
                 background: plan.popular ? "#EBF4FB" : "#FFFFFF",
               }}
+              whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.1)" }}
+              transition={{ duration: 0.25 }}
             >
               {plan.popular && (
                 <span
@@ -81,9 +108,9 @@ export default function SubscriptionBanner() {
               >
                 Bu Planı Seç
               </Link>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <p style={{ fontSize: "0.75rem", color: "#6B6868", textAlign: "center" }}>
           İstediğiniz zaman iptal edebilirsiniz.

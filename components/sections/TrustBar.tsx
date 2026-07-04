@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 const pillars = [
   {
     icon: (
@@ -37,13 +41,30 @@ const pillars = [
   },
 ]
 
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+}
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } },
+}
+
 export default function TrustBar() {
   return (
     <div style={{ borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
-        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0" style={{ borderColor: "#E8E8E8" }}>
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0"
+          style={{ borderColor: "#E8E8E8" }}
+        >
           {pillars.map((p, i) => (
-            <div key={i} className="flex items-center gap-3.5 py-5 px-4 lg:px-6">
+            <motion.div key={i} variants={item} className="flex items-center gap-3.5 py-5 px-4 lg:px-6">
               <div style={{ color: "#5CADD4", flexShrink: 0 }}>{p.icon}</div>
               <div>
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700, color: "#2C2B2B", marginBottom: "0.1rem" }}>
@@ -51,9 +72,9 @@ export default function TrustBar() {
                 </p>
                 <p style={{ fontSize: "0.75rem", color: "#8A8A8A", lineHeight: 1.4 }}>{p.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   )

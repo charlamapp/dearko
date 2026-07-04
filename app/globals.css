@@ -122,4 +122,19 @@
   /* Page fade-in */
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   .fade-up { animation: fadeUp 0.45s ease both; }
+
+  /* Coffee steam */
+  @keyframes steam-rise {
+    0%   { transform: translateY(0) scaleX(1);    opacity: 0; }
+    18%  { opacity: 0.75; }
+    82%  { opacity: 0.18; }
+    100% { transform: translateY(-160px) scaleX(0.25); opacity: 0; }
+  }
+  @keyframes steam-sway {
+    0%, 100% { margin-left: 0; }
+    50%       { margin-left: 7px; }
+  }
+
+  /* Scroll reveal helper (used alongside Framer Motion) */
+  .reveal-ready { will-change: transform, opacity; }
 }

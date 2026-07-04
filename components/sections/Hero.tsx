@@ -2,8 +2,36 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 
 type Slide = { id: string; image: string; position?: string; headline: string; sub: string; cta: string; href: string }
+
+const STEAM_STREAMS = [
+  { delay: "0s",    left: "0px",   height: 44 },
+  { delay: "1.1s",  left: "14px",  height: 60 },
+  { delay: "0.55s", left: "28px",  height: 36 },
+]
+
+function SteamParticles() {
+  return (
+    <div className="absolute z-[15] pointer-events-none"
+      style={{ bottom: "32%", left: "clamp(2rem, 10%, 8rem)" }}>
+      {STEAM_STREAMS.map((s, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          left: s.left,
+          bottom: 0,
+          width: 4,
+          height: s.height,
+          background: "linear-gradient(to top, rgba(255,255,255,0.65), transparent)",
+          borderRadius: 2,
+          filter: "blur(2px)",
+          animation: `steam-rise 3.4s ease-in-out ${s.delay} infinite, steam-sway 2.2s ease-in-out ${s.delay} infinite`,
+        }} />
+      ))}
+    </div>
+  )
+}
 
 export default function Hero() {
   const [slides, setSlides] = useState<Slide[]>([])
@@ -36,7 +64,19 @@ export default function Hero() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}>
 
-      {/* Arka plan */}
+      {/* Video arka plan — /public/hero-video.mp4 varsa otomatik açılır */}
+      <video
+        id="hero-video"
+        autoPlay muted loop playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ display: "none" }}
+        onCanPlay={(e) => { (e.target as HTMLVideoElement).style.display = "block" }}
+      >
+        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src="/hero-video.webm" type="video/webm" />
+      </video>
+
+      {/* Slide görsel arkaplanlar */}
       {slides.map((slide, i) => (
         <img
           key={slide.id}
@@ -46,15 +86,18 @@ export default function Hero() {
           style={{
             objectPosition: slide.position ?? "center center",
             opacity: i === cur ? 1 : 0,
-            transition: "opacity 0.9s ease",
+            transition: "opacity 1.1s ease",
             zIndex: i === cur ? 1 : 0,
           }}
         />
       ))}
 
-      {/* Gradient — alt yarı */}
+      {/* Gradient */}
       <div className="absolute inset-0 z-10"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0) 100%)" }} />
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.18) 55%, rgba(0,0,0,0) 100%)" }} />
+
+      {/* Steam efekti */}
+      <SteamParticles />
 
       {/* Ok butonları */}
       <button onClick={prev} aria-label="Önceki"
@@ -72,22 +115,31 @@ export default function Hero() {
         </svg>
       </button>
 
-      {/* İçerik */}
+      {/* İçerik — slide değişince yeniden animate eder */}
       <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 lg:px-14 pb-12 lg:pb-20"
         style={{ maxWidth: "82rem", margin: "0 auto" }}>
 
-        {/* Slide numarası */}
         <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", marginBottom: "1.5rem", textTransform: "uppercase" }}>
           {String(cur + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
         </p>
 
-        <h1 className="heading-xl whitespace-pre-line mb-4 lg:mb-5" style={{ color: "#fff", maxWidth: "24rem", textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
-          {s.headline}
-        </h1>
-        <p style={{ fontSize: "clamp(0.875rem, 2vw, 1.0625rem)", color: "rgba(255,255,255,0.8)", lineHeight: 1.65, marginBottom: "2rem", maxWidth: "34rem" }}>
-          {s.sub}
-        </p>
-        <Link href={s.href} className="btn-white">{s.cta}</Link>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={s.id}
+            initial={{ opacity: 0, y: 36 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <h1 className="heading-xl whitespace-pre-line mb-4 lg:mb-5" style={{ color: "#fff", maxWidth: "24rem", textShadow: "0 2px 24px rgba(0,0,0,0.35)" }}>
+              {s.headline}
+            </h1>
+            <p style={{ fontSize: "clamp(0.875rem, 2vw, 1.0625rem)", color: "rgba(255,255,255,0.82)", lineHeight: 1.65, marginBottom: "2rem", maxWidth: "34rem" }}>
+              {s.sub}
+            </p>
+            <Link href={s.href} className="btn-white">{s.cta}</Link>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Sayfa göstergeleri */}
         <div className="flex items-center gap-2 mt-10">
