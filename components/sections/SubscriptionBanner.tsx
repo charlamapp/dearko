@@ -74,16 +74,16 @@ export default function SubscriptionBanner() {
                   style={{
                     fontFamily: "var(--font-inter)",
                     fontSize: "0.9375rem",
-                    fontWeight: 700,
+                    fontWeight: 800,
                     textTransform: "uppercase",
                     letterSpacing: "0.06em",
-                    color: "#2C2B2B",
+                    color: "#1A1919",
                     marginBottom: "0.25rem",
                   }}
                 >
                   {plan.name}
                 </h3>
-                <p style={{ fontSize: "0.8rem", color: "#6B6868" }}>{plan.beans} · {plan.frequency}</p>
+                <p style={{ fontSize: "0.82rem", color: "#5E5C5C" }}>{plan.beans} · {plan.frequency}</p>
               </div>
               <div className="mb-6 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
                 <span

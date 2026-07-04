@@ -57,9 +57,9 @@ export default function Header() {
   return (
     <>
       {/* Duyuru çubuğu */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center h-11"
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center h-11 px-4"
         style={{ background: "#5CADD4" }}>
-        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 600, letterSpacing: "0.03em", color: "#fff", textAlign: "center" }}>
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)", fontWeight: 600, letterSpacing: "0.02em", color: "#fff", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
           {announcements[annIdx]}
         </p>
       </div>

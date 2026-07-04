@@ -57,7 +57,7 @@ export default function ProductPage() {
   const hasVideo = Boolean(p.video)
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem", paddingBottom: "0" }}>
 
       {/* Breadcrumb */}
       <div className="py-4" style={{ borderBottom: "1px solid #E8E8E8" }}>
@@ -203,6 +203,37 @@ export default function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* Mobil sticky sepet çubuğu */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3"
+        style={{ background: "#fff", borderTop: "1px solid #E8E8E8", boxShadow: "0 -4px 20px rgba(0,0,0,0.08)" }}>
+        <div className="flex-1 min-w-0">
+          <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6B6868", marginBottom: "0.15rem" }}>
+            {p.name}
+          </p>
+          <p style={{ fontFamily: "var(--font-inter)", fontSize: "1.1rem", fontWeight: 800, color: "#2C2B2B", lineHeight: 1 }}>
+            ₺{p.price}
+          </p>
+        </div>
+        <button
+          onClick={handleAdd}
+          style={{
+            flexShrink: 0,
+            background: added ? "#1A7A3F" : "#2C2B2B",
+            color: "#fff", border: "none", cursor: "pointer",
+            fontFamily: "var(--font-inter)", fontSize: "0.78rem", fontWeight: 700,
+            letterSpacing: "0.07em", textTransform: "uppercase",
+            padding: "0.9rem 1.5rem",
+            minHeight: 52,
+            display: "flex", alignItems: "center", gap: "0.5rem",
+            transition: "background 0.2s",
+          }}>
+          {added ? <><Check size={13} strokeWidth={2.5} /> Eklendi</> : "Sepete Ekle"}
+        </button>
+      </div>
+
+      {/* Sticky bar için yer aç */}
+      <div className="lg:hidden h-20" />
 
     </div>
   )

@@ -67,10 +67,10 @@ export default function TrustBar() {
             <motion.div key={i} variants={item} className="flex items-center gap-3.5 py-5 px-4 lg:px-6">
               <div style={{ color: "#5CADD4", flexShrink: 0 }}>{p.icon}</div>
               <div>
-                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700, color: "#2C2B2B", marginBottom: "0.1rem" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.84rem", fontWeight: 700, color: "#1A1919", marginBottom: "0.15rem", letterSpacing: "-0.01em" }}>
                   {p.title}
                 </p>
-                <p style={{ fontSize: "0.75rem", color: "#8A8A8A", lineHeight: 1.4 }}>{p.desc}</p>
+                <p style={{ fontSize: "0.78rem", color: "#6A6868", lineHeight: 1.45 }}>{p.desc}</p>
               </div>
             </motion.div>
           ))}

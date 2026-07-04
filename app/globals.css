@@ -9,8 +9,8 @@
     background-color: #FFFFFF;
     color: #2C2B2B;
     font-family: var(--font-inter), system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 16px;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -31,50 +31,50 @@
   /* Headings — editorial, confident */
   .heading-xl {
     font-family: var(--font-inter), sans-serif;
-    font-size: clamp(2.1rem, 5.5vw, 3.75rem);
+    font-size: clamp(2.4rem, 6vw, 4.25rem);
     font-weight: 900;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
     text-transform: uppercase;
-    color: #2C2B2B;
+    color: #1A1919;
   }
   .heading-lg {
     font-family: var(--font-inter), sans-serif;
-    font-size: clamp(1.7rem, 3.8vw, 2.8rem);
-    font-weight: 800;
-    line-height: 1.06;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
     text-transform: uppercase;
-    color: #2C2B2B;
+    color: #1A1919;
   }
   .heading-md {
     font-family: var(--font-inter), sans-serif;
-    font-size: clamp(1.3rem, 2.8vw, 2.1rem);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
+    font-size: clamp(1.45rem, 3vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
-    color: #2C2B2B;
+    color: #1A1919;
   }
   .heading-sm {
     font-family: var(--font-inter), sans-serif;
-    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: #2C2B2B;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+    color: #1A1919;
   }
 
   /* Eyebrow labels */
-  .label       { font-family: var(--font-inter), sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #5CADD4; }
-  .label-ink   { font-family: var(--font-inter), sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #2C2B2B; }
-  .label-muted { font-family: var(--font-inter), sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6868; }
+  .label       { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #5CADD4; }
+  .label-ink   { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #2C2B2B; }
+  .label-muted { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #7A7878; }
 
   /* Body copy */
-  .body-xl { font-size: 1.0625rem; line-height: 1.75; color: #6B6868; }
-  .body-lg { font-size: 0.9375rem; line-height: 1.75; color: #6B6868; }
-  .body-md { font-size: 0.875rem;  line-height: 1.7;  color: #6B6868; }
-  .body-sm { font-size: 0.8125rem; line-height: 1.65; color: #6B6868; }
+  .body-xl { font-size: 1.125rem;  line-height: 1.8;  color: #454343; }
+  .body-lg { font-size: 1rem;      line-height: 1.78; color: #454343; }
+  .body-md { font-size: 0.9375rem; line-height: 1.72; color: #4D4B4B; }
+  .body-sm { font-size: 0.875rem;  line-height: 1.68; color: #5E5C5C; }
 
   /* Buttons — solid, confident */
   .btn {
@@ -93,27 +93,28 @@
   .btn-white         { @apply btn; background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.8); }
   .btn-white:hover   { background: #fff; color: #2C2B2B; }
 
-  /* Inputs */
+  /* Inputs — font-size min 16px to prevent iOS zoom */
   .input {
     width: 100%; border: 1px solid #E0E0E0; border-radius: 0; background: #fff;
-    padding: 0.8rem 1rem; font-family: var(--font-inter), sans-serif; font-size: 0.875rem;
+    padding: 0.8rem 1rem; font-family: var(--font-inter), sans-serif; font-size: 1rem;
     color: #2C2B2B; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
   }
   .input:focus { border-color: #5CADD4; box-shadow: 0 0 0 3px rgba(92,173,212,0.12); }
   .input::placeholder { color: #B0B0B0; }
 
   .select {
     width: 100%; border: 1px solid #E0E0E0; border-radius: 0; background: #fff;
-    padding: 0.8rem 2.25rem 0.8rem 1rem; font-family: var(--font-inter), sans-serif;
-    font-size: 0.875rem; color: #2C2B2B; outline: none; appearance: none;
+    padding: 0.875rem 2.25rem 0.875rem 1rem; font-family: var(--font-inter), sans-serif;
+    font-size: 1rem; color: #2C2B2B; outline: none; -webkit-appearance: none; appearance: none;
     cursor: pointer; transition: border-color 0.2s;
   }
   .select:focus { border-color: #5CADD4; }
 
   /* Nav */
-  .nav-link        { font-family: var(--font-inter), sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.02em; color: #2C2B2B; text-decoration: none; padding: 0.3rem 0.5rem; }
-  .nav-link:hover  { opacity: 0.55; }
-  .nav-link-active { font-family: var(--font-inter), sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.02em; color: #2C2B2B; text-decoration: none; padding: 0.3rem 0.5rem; border-bottom: 2px solid #2C2B2B; }
+  .nav-link        { font-family: var(--font-inter), sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.01em; color: #2C2B2B; text-decoration: none; padding: 0.3rem 0.55rem; }
+  .nav-link:hover  { opacity: 0.5; }
+  .nav-link-active { font-family: var(--font-inter), sans-serif; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.01em; color: #1A1919; text-decoration: none; padding: 0.3rem 0.55rem; border-bottom: 2px solid #1A1919; }
 
   /* Spinner */
   .spinner { width: 1.25rem; height: 1.25rem; border: 2px solid #E8E8E8; border-top-color: #2C2B2B; border-radius: 50%; animation: spin 0.7s linear infinite; }

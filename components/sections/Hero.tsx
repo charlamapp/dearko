@@ -134,7 +134,7 @@ export default function Hero() {
             <h1 className="heading-xl whitespace-pre-line mb-4 lg:mb-5" style={{ color: "#fff", maxWidth: "24rem", textShadow: "0 2px 24px rgba(0,0,0,0.35)" }}>
               {s.headline}
             </h1>
-            <p style={{ fontSize: "clamp(0.875rem, 2vw, 1.0625rem)", color: "rgba(255,255,255,0.82)", lineHeight: 1.65, marginBottom: "2rem", maxWidth: "34rem" }}>
+            <p style={{ fontSize: "clamp(1rem, 2.2vw, 1.15rem)", fontWeight: 400, color: "rgba(255,255,255,0.88)", lineHeight: 1.7, marginBottom: "2.25rem", maxWidth: "34rem" }}>
               {s.sub}
             </p>
             <Link href={s.href} className="btn-white">{s.cta}</Link>

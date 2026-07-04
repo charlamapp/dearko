@@ -118,10 +118,10 @@ export default function PhilosophySection() {
                     {s.num}
                   </span>
                 </motion.div>
-                <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#2C2B2B", marginBottom: "0.75rem" }}>
+                <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1.0625rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em", color: "#1A1919", marginBottom: "0.75rem" }}>
                   {s.title}
                 </h3>
-                <p style={{ fontSize: "0.875rem", color: "#6B6868", lineHeight: 1.7, maxWidth: "18rem" }}>
+                <p style={{ fontSize: "0.9375rem", color: "#4D4B4B", lineHeight: 1.72, maxWidth: "18rem" }}>
                   {s.desc}
                 </p>
               </motion.div>
