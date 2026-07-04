@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 
 const navLinks = [
   { href: "/magazin",    label: "Kahveler" },
-  { href: "/quiz",       label: "Profil Testi" },
+  { href: "/quiz",       label: "Kahveni Bul" },
   { href: "/abonelik",   label: "Abonelik" },
   { href: "/kurumsal",   label: "Kurumsal" },
   { href: "/mobil-arac", label: "Mobil Araç" },
