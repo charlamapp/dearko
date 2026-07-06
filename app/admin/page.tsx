@@ -735,9 +735,17 @@ function ProductsSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function handleUpload(file: File) {
     setUploading(true)
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    setForm((f) => ({ ...f, image: url })); setUploading(false)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      const { url, error } = await res.json()
+      if (error || !url) throw new Error(error || "upload failed")
+      setForm((f) => ({ ...f, image: url }))
+    } catch (e) {
+      console.error("Upload hatası:", e)
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function save() {
@@ -984,9 +992,18 @@ function HeroSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function uploadImg(file: File) {
     setUploading(true)
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    updateSlide(activeIdx, "image", url); setUploading(false)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      const { url, error } = await res.json()
+      if (error || !url) throw new Error(error || "upload failed")
+      updateSlide(activeIdx, "image", url)
+    } catch (e) {
+      console.error("Upload hatası:", e)
+      onToast("Görsel yüklenemedi — lütfen tekrar deneyin")
+    } finally {
+      setUploading(false)
+    }
   }
 
   function updateSlide(idx: number, key: keyof HeroSlide, val: string) {
@@ -1093,9 +1110,11 @@ function HakkimizdaSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function uploadImg(file: File) {
     setUploading(true)
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    setData((d) => d ? { ...d, storyImage: url } : d); setUploading(false)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
+      if (url) setData((d) => d ? { ...d, storyImage: url } : d)
+    } finally { setUploading(false) }
   }
 
   async function save() {
@@ -1272,9 +1291,11 @@ function KurumsalSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function uploadImg(file: File) {
     setUploading(true)
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    setData((d) => d ? { ...d, heroImage: url } : d); setUploading(false)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
+      if (url) setData((d) => d ? { ...d, heroImage: url } : d)
+    } finally { setUploading(false) }
   }
 
   function set(k: keyof D, v: string) { setData((d) => d ? { ...d, [k]: v } : d) }
@@ -1357,16 +1378,20 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function uploadHero(file: File) {
     setUploading("hero")
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    setData((d) => d ? { ...d, heroImage: url } : d); setUploading(null)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
+      if (url) setData((d) => d ? { ...d, heroImage: url } : d)
+    } finally { setUploading(null) }
   }
 
   async function uploadGallery(file: File) {
     setUploading(-1)
-    const fd = new FormData(); fd.append("file", file)
-    const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-    setData((d) => d ? { ...d, gallery: [...d.gallery, url] } : d); setUploading(null)
+    try {
+      const fd = new FormData(); fd.append("file", file)
+      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
+      if (url) setData((d) => d ? { ...d, gallery: [...d.gallery, url] } : d)
+    } finally { setUploading(null) }
   }
 
   function set(k: keyof D, v: string) { setData((d) => d ? { ...d, [k]: v } : d) }
