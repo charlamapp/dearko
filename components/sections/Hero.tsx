@@ -52,7 +52,7 @@ export default function Hero() {
   }, [next, paused, slides.length])
 
   if (!slides.length) return (
-    <div style={{ background: "#F0F0F0", height: "100svh", minHeight: 560 }} />
+    <div style={{ background: "#F0F0F0", height: "calc(100svh - 6.25rem)", minHeight: 480 }} />
   )
 
   const s = slides[cur]
@@ -60,7 +60,7 @@ export default function Hero() {
   return (
     <div
       className="relative overflow-hidden"
-      style={{ height: "100svh", minHeight: 560, maxHeight: 960 }}
+      style={{ height: "calc(100svh - 6.25rem)", minHeight: 480, maxHeight: 900 }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}>
 
@@ -99,54 +99,55 @@ export default function Hero() {
       {/* Steam efekti */}
       <SteamParticles />
 
-      {/* Ok butonları */}
+      {/* Ok butonları — sadece desktop */}
       <button onClick={prev} aria-label="Önceki"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center opacity-70 hover:opacity-100"
+        className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
         style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
           <path d="M10 3L5 8L10 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
       <button onClick={next} aria-label="Sonraki"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center opacity-70 hover:opacity-100"
+        className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
         style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
           <path d="M6 3L11 8L6 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
-      {/* İçerik — slide değişince yeniden animate eder */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 lg:px-14 pb-12 lg:pb-20"
+      {/* İçerik */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 lg:px-14 pb-8 sm:pb-12 lg:pb-20"
         style={{ maxWidth: "82rem", margin: "0 auto" }}>
 
-        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", marginBottom: "1.5rem", textTransform: "uppercase" }}>
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", marginBottom: "0.75rem", textTransform: "uppercase" }}>
           {String(cur + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
         </p>
 
         <AnimatePresence mode="wait">
           <motion.div
             key={s.id}
-            initial={{ opacity: 0, y: 36 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <h1 className="heading-xl whitespace-pre-line mb-4 lg:mb-5" style={{ color: "#fff", maxWidth: "24rem", textShadow: "0 2px 24px rgba(0,0,0,0.35)" }}>
+            <h1 className="heading-xl whitespace-pre-line mb-3 lg:mb-5"
+              style={{ color: "#fff", maxWidth: "clamp(16rem, 80vw, 24rem)", textShadow: "0 2px 24px rgba(0,0,0,0.35)", fontSize: "clamp(1.75rem, 6vw, 4.25rem)" }}>
               {s.headline}
             </h1>
-            <p style={{ fontSize: "clamp(1rem, 2.2vw, 1.15rem)", fontWeight: 400, color: "rgba(255,255,255,0.88)", lineHeight: 1.7, marginBottom: "2.25rem", maxWidth: "34rem" }}>
+            <p className="hidden sm:block" style={{ fontSize: "clamp(0.9rem, 2.2vw, 1.15rem)", fontWeight: 400, color: "rgba(255,255,255,0.88)", lineHeight: 1.7, marginBottom: "1.75rem", maxWidth: "34rem" }}>
               {s.sub}
             </p>
-            <Link href={s.href} className="btn-white">{s.cta}</Link>
+            <Link href={s.href} className="btn-white" style={{ fontSize: "0.75rem", padding: "0.75rem 1.5rem" }}>{s.cta}</Link>
           </motion.div>
         </AnimatePresence>
 
         {/* Sayfa göstergeleri */}
-        <div className="flex items-center gap-2 mt-10">
+        <div className="flex items-center gap-2 mt-6 sm:mt-10">
           {slides.map((_, i) => (
             <button key={i} onClick={() => setCur(i)} aria-label={`Slayt ${i + 1}`}
               style={{
-                width: i === cur ? 28 : 6, height: 3,
+                width: i === cur ? 24 : 5, height: 3,
                 background: i === cur ? "#fff" : "rgba(255,255,255,0.35)",
                 border: "none", cursor: "pointer", padding: 0,
                 transition: "all 0.35s ease",
