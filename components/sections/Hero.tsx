@@ -77,23 +77,20 @@ export default function Hero() {
       </video>
 
       {/* Slide görsel arkaplanlar */}
-      {slides.map((slide, i) => {
-        const isLight = slide.image?.endsWith(".png") && !slide.image?.includes("unsplash")
-        return (
-          <div key={slide.id} className="absolute inset-0"
-            style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.1s ease", zIndex: i === cur ? 1 : 0, background: isLight ? "#1A1919" : undefined }}>
-            <img
-              src={slide.image}
-              alt=""
-              className="w-full h-full"
-              style={{
-                objectFit: isLight ? "contain" : "cover",
-                objectPosition: slide.position ?? "center center",
-              }}
-            />
-          </div>
-        )
-      })}
+      {slides.map((slide, i) => (
+        <div key={slide.id} className="absolute inset-0"
+          style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.1s ease", zIndex: i === cur ? 1 : 0 }}>
+          <img
+            src={slide.image}
+            alt=""
+            className="w-full h-full"
+            style={{
+              objectFit: "cover",
+              objectPosition: slide.position ?? "center center",
+            }}
+          />
+        </div>
+      ))}
 
       {/* Gradient */}
       <div className="absolute inset-0 z-10"
@@ -102,18 +99,18 @@ export default function Hero() {
       {/* Steam efekti */}
       <SteamParticles />
 
-      {/* Ok butonları — sadece desktop */}
+      {/* Ok butonları */}
       <button onClick={prev} aria-label="Önceki"
-        className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
+        className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 items-center justify-center opacity-70 hover:opacity-100"
         style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
           <path d="M10 3L5 8L10 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
       <button onClick={next} aria-label="Sonraki"
-        className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
+        className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 items-center justify-center opacity-70 hover:opacity-100"
         style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
           <path d="M6 3L11 8L6 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
