@@ -96,16 +96,16 @@ export default function Hero() {
       <SteamParticles />
 
       {/* Ok butonları */}
-      <button onClick={prev} aria-label="Önceki"
-        className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 items-center justify-center opacity-70 hover:opacity-100"
-        style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
+      <button type="button" onClick={prev} aria-label="Önceki"
+        className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
+        style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer", touchAction: "manipulation" }}>
         <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
           <path d="M10 3L5 8L10 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      <button onClick={next} aria-label="Sonraki"
-        className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 items-center justify-center opacity-70 hover:opacity-100"
-        style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer" }}>
+      <button type="button" onClick={next} aria-label="Sonraki"
+        className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center opacity-70 hover:opacity-100"
+        style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(6px)", color: "#fff", cursor: "pointer", touchAction: "manipulation" }}>
         <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
           <path d="M6 3L11 8L6 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -131,7 +131,7 @@ export default function Hero() {
               style={{ color: "#fff", maxWidth: "clamp(16rem, 80vw, 24rem)", textShadow: "0 2px 24px rgba(0,0,0,0.35)", fontSize: "clamp(1.75rem, 6vw, 4.25rem)" }}>
               {s.headline}
             </h1>
-            <p className="hidden sm:block" style={{ fontSize: "clamp(0.9rem, 2.2vw, 1.15rem)", fontWeight: 400, color: "rgba(255,255,255,0.88)", lineHeight: 1.7, marginBottom: "1.75rem", maxWidth: "34rem" }}>
+            <p style={{ fontSize: "clamp(0.82rem, 2.2vw, 1.15rem)", fontWeight: 400, color: "rgba(255,255,255,0.88)", lineHeight: 1.6, marginBottom: "1.25rem", maxWidth: "34rem" }}>
               {s.sub}
             </p>
             <Link href={s.href} className="btn-white" style={{ fontSize: "0.75rem", padding: "0.75rem 1.5rem" }}>{s.cta}</Link>
