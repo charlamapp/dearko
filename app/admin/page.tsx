@@ -1012,8 +1012,16 @@ function HeroSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function saveSlides() {
     setSaving(true)
-    await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "hero", data: slides }) })
-    setSaving(false); onToast("Hero slider kaydedildi ✓")
+    try {
+      const res = await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "hero", data: slides }) })
+      const json = await res.json()
+      if (!res.ok || json.error) throw new Error(json.error || "kayıt hatası")
+      onToast("Hero slider kaydedildi ✓")
+    } catch (e) {
+      onToast("Kayıt başarısız: " + (e instanceof Error ? e.message : "hata"))
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (!slides.length) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
@@ -1120,8 +1128,8 @@ function HakkimizdaSection({ onToast }: { onToast: (m: string) => void }) {
   async function save() {
     if (!data) return
     setSaving(true)
-    await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "hakkimizda", data }) })
-    setSaving(false); onToast("Hakkımızda kaydedildi ✓")
+    const res = await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "hakkimizda", data }) })
+    setSaving(false); onToast(res.ok ? "Hakkımızda kaydedildi ✓" : "Kayıt başarısız ✗")
   }
 
   function updateMilestone(i: number, key: "year" | "event", val: string) {
@@ -1235,8 +1243,8 @@ function IletisimSection({ onToast }: { onToast: (m: string) => void }) {
   async function save() {
     if (!data) return
     setSaving(true)
-    await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "iletisim", data }) })
-    setSaving(false); onToast("İletişim bilgileri kaydedildi ✓")
+    const res = await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "iletisim", data }) })
+    setSaving(false); onToast(res.ok ? "İletişim bilgileri kaydedildi ✓" : "Kayıt başarısız ✗")
   }
 
   if (!data) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
@@ -1303,8 +1311,8 @@ function KurumsalSection({ onToast }: { onToast: (m: string) => void }) {
   async function save() {
     if (!data) return
     setSaving(true)
-    await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "kurumsal", data }) })
-    setSaving(false); onToast("Kurumsal içerik kaydedildi ✓")
+    const res = await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "kurumsal", data }) })
+    setSaving(false); onToast(res.ok ? "Kurumsal içerik kaydedildi ✓" : "Kayıt başarısız ✗")
   }
 
   if (!data) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
@@ -1415,8 +1423,8 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
   async function save() {
     if (!data) return
     setSaving(true)
-    await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "mobilArac", data }) })
-    setSaving(false); onToast("Mobil araç içeriği kaydedildi ✓")
+    const res = await fetch("/api/content", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ section: "mobilArac", data }) })
+    setSaving(false); onToast(res.ok ? "Mobil araç içeriği kaydedildi ✓" : "Kayıt başarısız ✗")
   }
 
   if (!data) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>

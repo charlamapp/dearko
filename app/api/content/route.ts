@@ -4,8 +4,18 @@ import { createClient } from "@supabase/supabase-js"
 function sb() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+}
+
+function localFallback() {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const raw = require("fs").readFileSync(
+      require("path").join(process.cwd(), "data", "content.json"), "utf-8"
+    )
+    return JSON.parse(raw)
+  } catch { return null }
 }
 
 export async function GET() {
@@ -14,22 +24,19 @@ export async function GET() {
     .select("id, data")
 
   if (error || !data?.length) {
-    // Fallback: dosyadan oku (local geliştirme)
-    try {
-      const { readFileSync } = await import("fs")
-      const { join } = await import("path")
-      const raw = readFileSync(join(process.cwd(), "data", "content.json"), "utf-8")
-      return NextResponse.json(JSON.parse(raw))
-    } catch {
-      return NextResponse.json({})
-    }
+    const fallback = localFallback()
+    if (fallback) return NextResponse.json(fallback, {
+      headers: { "Cache-Control": "no-store" }
+    })
+    return NextResponse.json({}, { headers: { "Cache-Control": "no-store" } })
   }
 
   const content: Record<string, unknown> = {}
-  for (const row of data) {
-    content[row.id] = row.data
-  }
-  return NextResponse.json(content)
+  for (const row of data) content[row.id] = row.data
+
+  return NextResponse.json(content, {
+    headers: { "Cache-Control": "no-store" }
+  })
 }
 
 export async function PATCH(req: Request) {
@@ -40,7 +47,7 @@ export async function PATCH(req: Request) {
     .upsert({ id: section, data, updated_at: new Date().toISOString() })
 
   if (error) {
-    console.error("Content save error:", error)
+    console.error("Content save error:", error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
