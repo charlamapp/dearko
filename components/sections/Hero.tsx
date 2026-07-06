@@ -77,20 +77,28 @@ export default function Hero() {
       </video>
 
       {/* Slide görsel arkaplanlar */}
-      {slides.map((slide, i) => (
-        <div key={slide.id} className="absolute inset-0"
-          style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.1s ease", zIndex: i === cur ? 1 : 0 }}>
-          <img
-            src={slide.image}
-            alt=""
-            className="w-full h-full"
-            style={{
-              objectFit: "cover",
-              objectPosition: slide.position ?? "center center",
-            }}
-          />
-        </div>
-      ))}
+      {slides.map((slide, i) => {
+        const isWide = slide.image?.match(/\.png(\?|$)/i) && !slide.image?.includes("unsplash")
+        return (
+          <div key={slide.id} className="absolute inset-0"
+            style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.1s ease", zIndex: i === cur ? 1 : 0, background: "#111" }}>
+            {/* Bulanık dolgu arka plan — sadece geniş PNG görseller için */}
+            {isWide && (
+              <img src={slide.image} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full"
+                style={{ objectFit: "cover", filter: "blur(28px) brightness(0.55)", transform: "scale(1.18)" }} />
+            )}
+            <img
+              src={slide.image}
+              alt=""
+              className="absolute inset-0 w-full h-full"
+              style={{
+                objectFit: isWide ? "contain" : "cover",
+                objectPosition: slide.position ?? "center center",
+              }}
+            />
+          </div>
+        )
+      })}
 
       {/* Gradient */}
       <div className="absolute inset-0 z-10"
