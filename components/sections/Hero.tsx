@@ -77,20 +77,23 @@ export default function Hero() {
       </video>
 
       {/* Slide görsel arkaplanlar */}
-      {slides.map((slide, i) => (
-        <img
-          key={slide.id}
-          src={slide.image}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{
-            objectPosition: slide.position ?? "center center",
-            opacity: i === cur ? 1 : 0,
-            transition: "opacity 1.1s ease",
-            zIndex: i === cur ? 1 : 0,
-          }}
-        />
-      ))}
+      {slides.map((slide, i) => {
+        const isLight = slide.image?.endsWith(".png") && !slide.image?.includes("unsplash")
+        return (
+          <div key={slide.id} className="absolute inset-0"
+            style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.1s ease", zIndex: i === cur ? 1 : 0, background: isLight ? "#1A1919" : undefined }}>
+            <img
+              src={slide.image}
+              alt=""
+              className="w-full h-full"
+              style={{
+                objectFit: isLight ? "contain" : "cover",
+                objectPosition: slide.position ?? "center center",
+              }}
+            />
+          </div>
+        )
+      })}
 
       {/* Gradient */}
       <div className="absolute inset-0 z-10"

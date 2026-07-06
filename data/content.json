@@ -2,8 +2,8 @@
   "hero": [
     {
       "id": "slide-1",
-      "image": "/uploads/dearko-arac.png",
-      "position": "center center",
+      "image": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1800&q=90",
+      "position": "center 40%",
       "headline": "Yeni Sezon\nÇekirdekleri Geldi",
       "sub": "Etiyopya, Kolombiya ve Guatemala'dan taze kavrulmuş tek kökenli kahveler.",
       "cta": "Hemen Keşfet",
@@ -12,6 +12,7 @@
     {
       "id": "slide-2",
       "image": "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1800&q=90",
+      "position": "center center",
       "headline": "Abonelik ile\n%15 İndirim",
       "sub": "İki haftada bir taze kavrum. Siparişten sonra 48 saatte kapında.",
       "cta": "Aboneliği Başlat",
@@ -19,7 +20,8 @@
     },
     {
       "id": "slide-3",
-      "image": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1800&q=90",
+      "image": "/uploads/dearko-arac.png",
+      "position": "center center",
       "headline": "Mobil Kahve\nAracını Kirala",
       "sub": "Festival, düğün, kurumsal etkinlik. Profesyonel barista ve ekipman dahil.",
       "cta": "Rezervasyon Yap",
