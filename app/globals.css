@@ -138,4 +138,18 @@
 
   /* Scroll reveal helper (used alongside Framer Motion) */
   .reveal-ready { will-change: transform, opacity; }
+
+  /* Hero section — landscape on mobile to match image aspect ratio */
+  .hero-section {
+    height: calc(100svh - 6.25rem);
+    min-height: 480px;
+    max-height: 900px;
+  }
+  @media (max-width: 639px) {
+    .hero-section {
+      height: 65vw;
+      min-height: 220px;
+      max-height: 320px;
+    }
+  }
 }
