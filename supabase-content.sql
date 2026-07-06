@@ -1,0 +1,66 @@
+-- Site içerik tablosu (admin paneli için)
+CREATE TABLE IF NOT EXISTS site_content (
+  id text PRIMARY KEY,
+  data jsonb NOT NULL,
+  updated_at timestamptz DEFAULT now()
+);
+
+-- RLS: servis rolü her şeyi yapabilir
+ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "service_all" ON site_content FOR ALL USING (true);
+
+-- Mevcut içeriği yükle
+INSERT INTO site_content (id, data) VALUES
+('hero', '[
+  {"id":"slide-1","image":"/uploads/1779034352432.jpg","position":"center 65%","headline":"Yeni Sezon\nÇekirdekleri Geldi","sub":"Etiyopya, Kolombiya ve Guatemala'\''dan taze kavrulmuş tek kökenli kahveler.","cta":"Hemen Keşfet","href":"/magazin"},
+  {"id":"slide-2","image":"https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1800&q=90","headline":"Abonelik ile\n%15 İndirim","sub":"İki haftada bir taze kavrum. Siparişten sonra 48 saatte kapında.","cta":"Aboneliği Başlat","href":"/abonelik"},
+  {"id":"slide-3","image":"https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1800&q=90","headline":"Mobil Kahve\nAracını Kirala","sub":"Festival, düğün, kurumsal etkinlik. Profesyonel barista ve ekipman dahil.","cta":"Rezervasyon Yap","href":"/rezervasyon"},
+  {"id":"slide-4","image":"https://images.unsplash.com/photo-1497935586047-9395ee010a64?w=1800&q=90","headline":"Kurumsal\nKahve Çözümleri","sub":"Ofisine özel abonelik planları ve ekipman desteği.","cta":"Planları Gör","href":"/kurumsal"}
+]'),
+('hakkimizda', '{
+  "heroHeadline": "Kahveye duyduğumuz saygıdan doğduk.",
+  "storyImage": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&q=85",
+  "story1": "2019'\''da iki kahve tutkunusu tarafından küçük bir İstanbul kavrum atölyesinde başladık. Amacımız sadece kahve satmak değil — her fincandaki hikayeyi Türkiye'\''deki kahveseverlerle doğrudan buluşturmaktı.",
+  "story2": "Bugün 12'\''den fazla ülkede çiftçilerle doğrudan ilişki kuruyoruz. Specialty kahveyi Türkiye'\''de yaygınlaştırma yolunda her gün daha ileriye gidiyoruz.",
+  "milestones": [
+    {"year":"2019","event":"İstanbul'\''da küçük bir kavrum atölyesi olarak kurulduk."},
+    {"year":"2020","event":"İlk direkt ticaret ortaklığı — Etiyopya Yirgacheffe."},
+    {"year":"2021","event":"Online mağaza ve abonelik lansmanı. İlk 500 abone."},
+    {"year":"2022","event":"Mobil kahve aracı İstanbul'\''a girdi. 50 etkinlik."},
+    {"year":"2023","event":"Kurumsal çözümler. 100+ kurumsal müşteri."},
+    {"year":"2024","event":"5.000 aktif abone. 12 ülkeden origin seçkisi."}
+  ]
+}'),
+('iletisim', '{
+  "email": "merhaba@dearko.com.tr",
+  "rezervasyon": "rezervasyon@dearko.com.tr",
+  "telefon": "+90 (212) 000 00 00",
+  "whatsapp": "+90 (532) 000 00 00",
+  "adres": "Moda Cad. No:12, Kadıköy, İstanbul",
+  "saatler": "Pzt–Cum 09:00–18:00",
+  "aciklama": "Abonelik, kurumsal teklif veya mobil araç rezervasyonu için bize ulaşın. 24 saat içinde geri döneceğiz."
+}'),
+('kurumsal', '{
+  "heroImage": "https://images.unsplash.com/photo-1497935586047-9395ee010a64?w=1600&q=85",
+  "heroHeadline": "Çalışanlarınız en iyisini hak ediyor.",
+  "introText": "Ofis büyüklüğünüzden bağımsız olarak düzenli taze çekirdek, ekipman desteği ve barista eğitimleriyle kahve kültürünü çalışma ortamınıza getiriyoruz."
+}'),
+('mobilArac', '{
+  "heroImage": "https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=1600&q=85",
+  "heroHeadline": "Kahveyi siz değil, biz getiririz.",
+  "baseFiyat": "₺2.500 / 2 saat",
+  "pricing": [
+    {"label":"Espresso Bar (2 saat)","price":"₺2.500"},
+    {"label":"Filter İstasyonu (2 saat)","price":"₺2.000"},
+    {"label":"Tam Menü (2 saat)","price":"₺3.500"},
+    {"label":"Ek saat","price":"₺800 / saat"},
+    {"label":"İstanbul dışı","price":"Fiyat + ulaşım"}
+  ],
+  "gallery": [
+    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80",
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=600&q=80",
+    "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80",
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80"
+  ]
+}')
+ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = now();
