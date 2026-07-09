@@ -3,35 +3,50 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Minus, Plus, X, ShieldCheck } from "lucide-react"
+import { Minus, Plus, X, ShieldCheck, Tag } from "lucide-react"
 import { useCart } from "@/lib/cart"
 import { createClient } from "@/lib/supabase/client"
 
-export default function SepetPage() {
-  const { items, update, remove, total, clear } = useCart()
-  const router = useRouter()
-  const [coupon, setCoupon] = useState("")
-  const [applied, setApplied] = useState(false)
-  const [loading, setLoading] = useState(false)
+const grindLabels: Record<string, string> = {
+  cekirdek: "Çekirdek (Öğütülmemiş)", v60: "V60 / Pour-Over",
+  "french-press": "French Press", espresso: "Espresso", moka: "Moka Pot",
+}
 
-  const discount = applied ? Math.round(total * 0.1) : 0
-  const shipping  = total >= 500 ? 0 : 49
-  const grandTotal = total - discount + shipping
+export default function SepetPage() {
+  const { items, update, remove, total } = useCart()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  // Bilgilendirme amaçlı tahmin — gerçek kargo ücreti ve indirim kodları
+  // Stripe ödeme sayfasında uygulanır.
+  const shipping = total >= 500 ? 0 : 49
+  const grandTotal = total + shipping
 
   async function handleCheckout() {
     setLoading(true)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push("/giris?redirect=/sepet"); setLoading(false); return }
+    setError("")
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push("/giris?redirect=/sepet"); return }
 
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items }),
-    })
-    const { url, error } = await res.json()
-    if (error) { alert(error); setLoading(false); return }
-    window.location.href = url
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: items.map((i) => ({ id: i.id, qty: i.qty, grind: i.grind })) }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.error || !data.url) {
+        setError(data.error || "Ödeme başlatılamadı. Lütfen tekrar deneyin.")
+        return
+      }
+      window.location.href = data.url
+    } catch {
+      setError("Bağlantı hatası. Lütfen tekrar deneyin.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!items.length) return (
@@ -58,7 +73,7 @@ export default function SepetPage() {
           {/* Ürünler */}
           <div className="lg:col-span-2">
             {items.map((item) => (
-              <div key={item.id} className="flex gap-5 py-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
+              <div key={item.key} className="flex gap-5 py-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
                 <div className="w-20 h-20 overflow-hidden flex-shrink-0" style={{ background: "#F5F5F5" }}>
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 </div>
@@ -67,21 +82,23 @@ export default function SepetPage() {
                     <div>
                       <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 600, color: "#2C2B2B" }}>{item.name}</p>
                       {item.weight && <p style={{ fontSize: "0.75rem", color: "#6B6868", marginTop: "0.2rem" }}>{item.weight}</p>}
-                      {item.grind && item.grind !== "cekirdek" && (
-                        <p style={{ fontSize: "0.72rem", color: "#6B6868" }}>Öğütme: {item.grind}</p>
+                      {item.grind && (
+                        <p style={{ fontSize: "0.72rem", color: "#6B6868" }}>Öğütme: {grindLabels[item.grind] ?? item.grind}</p>
                       )}
                     </div>
-                    <button onClick={() => remove(item.id)} style={{ color: "#6B6868" }} className="hover:opacity-60">
+                    <button onClick={() => remove(item.key)} aria-label={`${item.name} ürününü sepetten çıkar`}
+                      className="hover:opacity-60 w-11 h-11 -mr-3 -mt-2 flex items-center justify-center flex-shrink-0"
+                      style={{ color: "#6B6868", background: "none", border: "none", cursor: "pointer" }}>
                       <X size={14} strokeWidth={1.5} />
                     </button>
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center" style={{ border: "1px solid #E8E8E8" }}>
-                      <button onClick={() => update(item.id, item.qty - 1)} className="w-8 h-8 flex items-center justify-center hover:bg-[#F5F5F5]" style={{ color: "#6B6868", borderRight: "1px solid #E8E8E8" }}>
+                      <button onClick={() => update(item.key, item.qty - 1)} aria-label="Adet azalt" className="w-11 h-11 flex items-center justify-center hover:bg-[#F5F5F5]" style={{ color: "#6B6868", borderRight: "1px solid #E8E8E8", background: "none", cursor: "pointer" }}>
                         <Minus size={11} />
                       </button>
-                      <span className="w-8 text-center" style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#2C2B2B" }}>{item.qty}</span>
-                      <button onClick={() => update(item.id, item.qty + 1)} className="w-8 h-8 flex items-center justify-center hover:bg-[#F5F5F5]" style={{ color: "#6B6868", borderLeft: "1px solid #E8E8E8" }}>
+                      <span className="w-9 text-center" style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#2C2B2B" }}>{item.qty}</span>
+                      <button onClick={() => update(item.key, item.qty + 1)} aria-label="Adet artır" className="w-11 h-11 flex items-center justify-center hover:bg-[#F5F5F5]" style={{ color: "#6B6868", borderLeft: "1px solid #E8E8E8", background: "none", cursor: "pointer" }}>
                         <Plus size={11} />
                       </button>
                     </div>
@@ -102,42 +119,35 @@ export default function SepetPage() {
             <div className="sticky top-24">
               <p className="label-ink mb-6">Sipariş Özeti</p>
 
-              <div className="flex mb-6">
-                <input
-                  type="text" placeholder="İndirim kodu" value={coupon}
-                  onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-                  className="input flex-1" style={{ fontSize: "0.8125rem" }}
-                />
-                <button
-                  onClick={() => { if (coupon === "DEARKO20") setApplied(true) }}
-                  style={{ background: "#3D3B38", color: "#fff", border: "none", padding: "0 1rem", fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer", flexShrink: 0 }}>
-                  Uygula
-                </button>
-              </div>
-              {applied && (
-                <p style={{ fontSize: "0.75rem", color: "#5CADD4", marginBottom: "1rem" }}>✓ DEARKO20 uygulandı — %10 indirim</p>
-              )}
-
               <div className="space-y-3 mb-5" style={{ fontSize: "0.8125rem" }}>
                 <div className="flex justify-between" style={{ color: "#6B6868" }}>
                   <span>Ara Toplam</span><span>₺{total.toLocaleString("tr-TR")}</span>
                 </div>
-                {discount > 0 && (
-                  <div className="flex justify-between" style={{ color: "#6B6868" }}>
-                    <span>İndirim</span><span>−₺{discount.toLocaleString("tr-TR")}</span>
-                  </div>
-                )}
                 <div className="flex justify-between" style={{ color: "#6B6868" }}>
                   <span>Kargo</span><span>{shipping === 0 ? "Ücretsiz" : `₺${shipping}`}</span>
                 </div>
+                {shipping > 0 && (
+                  <p style={{ fontSize: "0.75rem", color: "#6C8145" }}>
+                    ₺{(500 - total).toLocaleString("tr-TR")} daha ekleyin, kargo ücretsiz olsun.
+                  </p>
+                )}
               </div>
 
-              <div className="flex justify-between items-center py-4 mb-6" style={{ borderTop: "1px solid #2C2B2B", borderBottom: "1px solid #E8E8E8" }}>
+              <div className="flex justify-between items-center py-4 mb-5" style={{ borderTop: "1px solid #2C2B2B", borderBottom: "1px solid #E8E8E8" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 600, color: "#2C2B2B" }}>Toplam</span>
                 <span style={{ fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "1.75rem", color: "#2C2B2B", lineHeight: 1 }}>
                   ₺{grandTotal.toLocaleString("tr-TR")}
                 </span>
               </div>
+
+              <p className="flex items-center gap-2 mb-5" style={{ fontSize: "0.75rem", color: "#6B6868" }}>
+                <Tag size={12} style={{ flexShrink: 0 }} />
+                İndirim kodunuzu ödeme sayfasında girebilirsiniz.
+              </p>
+
+              {error && (
+                <p role="alert" style={{ fontSize: "0.8125rem", color: "#e53e3e", marginBottom: "1rem" }}>{error}</p>
+              )}
 
               <button
                 onClick={handleCheckout}

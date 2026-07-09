@@ -51,7 +51,7 @@ const stagger = {
 }
 const item = {
   hidden: { opacity: 0, y: 30 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] } },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] as const } },
 }
 
 export default function PhilosophySection() {
@@ -90,7 +90,7 @@ export default function PhilosophySection() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
             <p className="label mb-4">Süreç</p>
             <h2 className="heading-lg">Çiftlikten Fincanınıza</h2>
@@ -110,8 +110,8 @@ export default function PhilosophySection() {
               <motion.div key={i} variants={item} className="relative z-10 flex flex-col items-center text-center px-8 py-8">
                 <motion.div
                   className="w-16 h-16 flex items-center justify-center mb-6 relative"
-                  style={{ background: "#5CADD4" }}
-                  whileHover={{ scale: 1.08, background: "#4a9bc0" }}
+                  style={{ background: "#6C8145" }}
+                  whileHover={{ scale: 1.08, background: "#57692F" }}
                   transition={{ duration: 0.2 }}
                 >
                   <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff" }}>

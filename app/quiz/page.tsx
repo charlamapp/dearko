@@ -76,7 +76,7 @@ const RESULTS: Record<CoffeeId, {
 /* ─── SVG Icons ──────────────────────────────────────────── */
 const icons = {
   filterMachine: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="22" y="14" width="36" height="8" rx="2"/>
       <path d="M28 22 L32 52 Q40 58 48 52 L52 22"/>
       <rect x="26" y="54" width="28" height="12" rx="2"/>
@@ -85,7 +85,7 @@ const icons = {
     </svg>
   ),
   frenchPress: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="26" y="16" width="28" height="48" rx="3"/>
       <line x1="40" y1="10" x2="40" y2="16"/>
       <rect x="34" y="8" width="12" height="4" rx="1"/>
@@ -96,7 +96,7 @@ const icons = {
     </svg>
   ),
   pourOver: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M24 16 L40 52 L56 16 Z"/>
       <ellipse cx="40" cy="16" rx="16" ry="4"/>
       <rect x="26" y="54" width="28" height="10" rx="5"/>
@@ -105,7 +105,7 @@ const icons = {
     </svg>
   ),
   espresso: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="16" y="12" width="48" height="44" rx="4"/>
       <rect x="22" y="18" width="20" height="16" rx="2"/>
       <circle cx="52" cy="26" r="7"/>
@@ -118,7 +118,7 @@ const icons = {
     </svg>
   ),
   cezve: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M28 48 Q24 32 32 24 L48 24 Q56 32 52 48 Z"/>
       <line x1="28" y1="48" x2="52" y2="48"/>
       <ellipse cx="40" cy="48" rx="12" ry="4"/>
@@ -128,14 +128,14 @@ const icons = {
     </svg>
   ),
   questionMark: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="40" cy="40" r="26"/>
       <path d="M32 32 Q32 24 40 24 Q48 24 48 32 Q48 38 40 42"/>
-      <circle cx="40" cy="52" r="2" fill="#5CADD4"/>
+      <circle cx="40" cy="52" r="2" fill="#6C8145"/>
     </svg>
   ),
   blackCup: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M24 30 L28 60 Q28 64 40 64 Q52 64 52 60 L56 30 Z"/>
       <ellipse cx="40" cy="30" rx="16" ry="5"/>
       <path d="M52 38 Q62 38 62 46 Q62 54 52 54"/>
@@ -143,7 +143,7 @@ const icons = {
     </svg>
   ),
   milkCup: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M24 30 L28 60 Q28 64 40 64 Q52 64 52 60 L56 30 Z"/>
       <ellipse cx="40" cy="30" rx="16" ry="5"/>
       <path d="M52 38 Q62 38 62 46 Q62 54 52 54"/>
@@ -151,7 +151,7 @@ const icons = {
     </svg>
   ),
   latteCup: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 32 L26 62 Q26 66 40 66 Q54 66 54 62 L58 32 Z"/>
       <ellipse cx="40" cy="32" rx="18" ry="6"/>
       <path d="M24 32 Q28 24 32 32 Q36 24 40 32 Q44 24 48 32 Q52 24 56 32"/>
@@ -159,7 +159,7 @@ const icons = {
     </svg>
   ),
   variesCup: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 44 L21 60 Q21 63 28 63 Q35 63 35 60 L38 44 Z"/>
       <ellipse cx="28" cy="44" rx="10" ry="3.5"/>
       <path d="M42 36 L45 56 Q45 60 54 60 Q63 60 63 56 L66 36 Z"/>
@@ -167,7 +167,7 @@ const icons = {
     </svg>
   ),
   fruity: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="40" cy="46" r="18"/>
       <path d="M40 28 Q40 18 50 14"/>
       <path d="M40 28 Q44 20 54 20"/>
@@ -177,7 +177,7 @@ const icons = {
     </svg>
   ),
   chocolate: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="16" y="24" width="48" height="36" rx="4"/>
       <line x1="16" y1="38" x2="64" y2="38"/>
       <line x1="16" y1="52" x2="64" y2="52"/>
@@ -186,7 +186,7 @@ const icons = {
     </svg>
   ),
   balanced: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="40" y1="14" x2="40" y2="64"/>
       <line x1="20" y1="24" x2="60" y2="24"/>
       <path d="M20 24 L14 40 Q14 46 20 46 Q26 46 26 40 Z"/>
@@ -195,7 +195,7 @@ const icons = {
     </svg>
   ),
   caramel: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M30 60 Q20 54 20 40 Q20 22 40 18 Q60 22 60 40 Q60 54 50 60"/>
       <path d="M30 60 Q40 68 50 60"/>
       <path d="M34 38 Q34 30 40 28 Q46 30 46 38 Q46 46 40 48 Q34 46 34 38Z"/>
@@ -203,7 +203,7 @@ const icons = {
     </svg>
   ),
   lightRoast: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="40" cy="40" r="14"/>
       <line x1="40" y1="14" x2="40" y2="20"/>
       <line x1="40" y1="60" x2="40" y2="66"/>
@@ -216,7 +216,7 @@ const icons = {
     </svg>
   ),
   mediumRoast: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M40 14 Q56 26 56 40 Q56 54 40 66 Q24 54 24 40 Q24 26 40 14Z"/>
       <line x1="40" y1="22" x2="40" y2="28"/>
       <line x1="40" y1="52" x2="40" y2="58"/>
@@ -225,7 +225,7 @@ const icons = {
     </svg>
   ),
   darkRoast: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M28 20 Q18 32 18 44 Q18 58 32 64 Q20 54 24 42 Q30 28 44 26 Q36 24 28 20Z"/>
       <path d="M44 26 Q58 30 62 44 Q62 58 48 66 Q64 58 64 44 Q62 28 44 26Z"/>
       <path d="M24 42 Q28 36 32 40 Q34 46 30 50"/>
@@ -233,20 +233,20 @@ const icons = {
     </svg>
   ),
   seedling: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="40" y1="64" x2="40" y2="36"/>
       <path d="M40 36 Q40 18 58 18 Q58 36 40 36Z"/>
       <path d="M40 48 Q40 36 24 32 Q22 44 40 48Z"/>
     </svg>
   ),
   halfStar: (
-    <svg viewBox="0 0 80 80" fill="none" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="none" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="40,14 46,30 64,30 50,42 56,58 40,48 24,58 30,42 16,30 34,30"/>
-      <path d="M40 14 L40 48" fill="#C8DFF0" stroke="none"/>
+      <path d="M40 14 L40 48" fill="#E3EAD3" stroke="none"/>
     </svg>
   ),
   fullStar: (
-    <svg viewBox="0 0 80 80" fill="#C8DFF0" stroke="#5CADD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 80 80" fill="#E3EAD3" stroke="#6C8145" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="40,14 46,30 64,30 50,42 56,58 40,48 24,58 30,42 16,30 34,30"/>
     </svg>
   ),
@@ -356,7 +356,7 @@ export default function QuizPage() {
   const [step, setStep] = useState(0)              // 0..4 = questions, 5 = result
   const [answers, setAnswers] = useState<string[]>([])
   const [selected, setSelected] = useState<string | null>(null)
-  const { addItem } = useCart()
+  const { add } = useCart()
 
   const q = questions[step]
   const result = step === 5 ? RESULTS[calcResult(answers)] : null
@@ -378,7 +378,7 @@ export default function QuizPage() {
 
   function addToCart() {
     if (!result) return
-    addItem({ id: result.id, name: result.name, price: result.price, image: result.image, quantity: 1 })
+    add({ id: result.id, name: result.name, price: result.price, image: result.image, weight: result.weight, grind: "cekirdek", qty: 1 })
   }
 
   return (
@@ -388,7 +388,7 @@ export default function QuizPage() {
       {step < questions.length && (
         <div style={{ position: "fixed", top: "6.25rem", left: 0, right: 0, height: 3, background: "#F0F0F0", zIndex: 40 }}>
           <motion.div
-            style={{ height: "100%", background: "#5CADD4", transformOrigin: "left" }}
+            style={{ height: "100%", background: "#6C8145", transformOrigin: "left" }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
@@ -401,7 +401,7 @@ export default function QuizPage() {
         <div className="flex items-center justify-between mb-10">
           <Link href="/" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, textDecoration: "none" }}>
             <svg width="22" height="30" viewBox="0 0 28 38" fill="none">
-              <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4"/>
+              <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145"/>
               <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF"/>
             </svg>
             <span style={{ fontSize: "0.5rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B" }}>DEARKO</span>
@@ -418,10 +418,10 @@ export default function QuizPage() {
           {/* ── Question screens ── */}
           {step < questions.length && (
             <motion.div key={`q${step}`} variants={slide} initial="enter" animate="center" exit="exit"
-              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}>
+              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const }}>
 
               <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#5CADD4", marginBottom: "0.75rem" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6C8145", marginBottom: "0.75rem" }}>
                   Kahve Profil Testi
                 </p>
                 <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 800, color: "#2C2B2B", letterSpacing: "-0.02em", lineHeight: 1.15, marginBottom: "0.6rem" }}>
@@ -449,7 +449,7 @@ export default function QuizPage() {
                         display: "flex", flexDirection: "column", alignItems: "center",
                         padding: "1.5rem 1rem", border: "none", cursor: "pointer",
                         background: active ? "#EBF4FB" : "#fff",
-                        outline: active ? "2px solid #5CADD4" : "2px solid #E8E8E8",
+                        outline: active ? "2px solid #6C8145" : "2px solid #E8E8E8",
                         outlineOffset: -2,
                         transition: "all 0.2s ease",
                         position: "relative",
@@ -458,7 +458,7 @@ export default function QuizPage() {
                       {active && (
                         <div style={{
                           position: "absolute", top: 10, right: 10,
-                          width: 20, height: 20, background: "#5CADD4",
+                          width: 20, height: 20, background: "#6C8145",
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}>
                           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -493,7 +493,7 @@ export default function QuizPage() {
                   style={{
                     display: "flex", alignItems: "center", gap: "0.5rem",
                     padding: "0.9rem 2.5rem", border: "none", cursor: selected ? "pointer" : "not-allowed",
-                    background: selected ? "#5CADD4" : "#E0E0E0",
+                    background: selected ? "#6C8145" : "#E0E0E0",
                     fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700,
                     letterSpacing: "0.06em", textTransform: "uppercase", color: selected ? "#fff" : "#A0A0A0",
                     transition: "all 0.2s ease",
@@ -512,7 +512,7 @@ export default function QuizPage() {
           {/* ── Result screen ── */}
           {step === questions.length && result && (
             <motion.div key="result" variants={slide} initial="enter" animate="center" exit="exit"
-              transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}>
+              transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] as const }}>
 
               {/* Header */}
               <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
@@ -522,10 +522,10 @@ export default function QuizPage() {
                   style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 64, height: 64, background: "#EBF4FB", marginBottom: "1.25rem" }}
                 >
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path d="M14 2L17.5 10H26L19.5 15L22 23L14 18L6 23L8.5 15L2 10H10.5Z" fill="#5CADD4"/>
+                    <path d="M14 2L17.5 10H26L19.5 15L22 23L14 18L6 23L8.5 15L2 10H10.5Z" fill="#6C8145"/>
                   </svg>
                 </motion.div>
-                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#5CADD4", marginBottom: "0.6rem" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6C8145", marginBottom: "0.6rem" }}>
                   Profiliniz Hazır
                 </p>
                 <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(1.6rem, 4vw, 2.2rem)", fontWeight: 900, color: "#2C2B2B", letterSpacing: "-0.025em", lineHeight: 1.1 }}>
@@ -536,7 +536,7 @@ export default function QuizPage() {
               {/* Product card */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{ delay: 0.25, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }}
                 style={{
                   display: "grid", gridTemplateColumns: "1fr 1fr",
                   background: "#fff", border: "1px solid #E8E8E8",
@@ -550,7 +550,7 @@ export default function QuizPage() {
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   <div style={{
                     position: "absolute", bottom: 12, left: 12,
-                    background: "#5CADD4", padding: "0.3rem 0.75rem",
+                    background: "#6C8145", padding: "0.3rem 0.75rem",
                     fontFamily: "var(--font-inter)", fontSize: "0.62rem", fontWeight: 700,
                     letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff",
                   }}>
@@ -560,7 +560,7 @@ export default function QuizPage() {
 
                 {/* Info */}
                 <div style={{ padding: "2rem 1.75rem", display: "flex", flexDirection: "column" }}>
-                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#5CADD4", marginBottom: "0.5rem" }}>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6C8145", marginBottom: "0.5rem" }}>
                     {result.origin}
                   </p>
                   <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "1.25rem", fontWeight: 800, color: "#2C2B2B", letterSpacing: "-0.02em", lineHeight: 1.15, marginBottom: "0.6rem" }}>
@@ -593,7 +593,7 @@ export default function QuizPage() {
                       onClick={addToCart}
                       style={{
                         display: "flex", alignItems: "center", gap: "0.4rem",
-                        padding: "0.7rem 1.2rem", background: "#5CADD4", border: "none", cursor: "pointer",
+                        padding: "0.7rem 1.2rem", background: "#6C8145", border: "none", cursor: "pointer",
                         fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700,
                         letterSpacing: "0.06em", textTransform: "uppercase", color: "#fff",
                       }}

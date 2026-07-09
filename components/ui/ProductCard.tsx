@@ -16,7 +16,9 @@ export default function ProductCard({ id, name, price, image, weight, origin, ro
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault()
-    add({ id, name, price, image, weight })
+    // Kartlardan eklenen kahve varsayılan olarak çekirdek (öğütülmemiş) gider;
+    // öğütme sepette görünür, ürün sayfasından değiştirilebilir.
+    add({ id, name, price, image, weight, grind: category === "equipment" ? undefined : "cekirdek" })
     setAdded(true)
     setTimeout(() => setAdded(false), 1800)
   }

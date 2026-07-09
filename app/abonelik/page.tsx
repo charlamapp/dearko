@@ -29,7 +29,7 @@ export default function AbonelikPage() {
                 key={plan.id}
                 className="flex flex-col p-8 lg:p-10 relative"
                 style={{
-                  border: plan.popular ? "2px solid #5CADD4" : "1px solid #E8E8E8",
+                  border: plan.popular ? "2px solid #6C8145" : "1px solid #E8E8E8",
                   background: plan.popular ? "#EBF4FB" : "#FFFFFF",
                 }}
               >
@@ -37,7 +37,7 @@ export default function AbonelikPage() {
                   <span
                     className="absolute -top-3 left-8 px-3 py-1 text-white"
                     style={{
-                      background: "#5CADD4",
+                      background: "#6C8145",
                       fontFamily: "var(--font-inter)",
                       fontSize: "0.6rem",
                       fontWeight: 700,
@@ -75,14 +75,14 @@ export default function AbonelikPage() {
                 <ul className="space-y-3 mb-10 flex-1">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2.5 text-[0.8125rem]" style={{ color: "#6B6868" }}>
-                      <Check size={13} className="flex-shrink-0 mt-0.5" style={{ color: "#5CADD4" }} />
+                      <Check size={13} className="flex-shrink-0 mt-0.5" style={{ color: "#6C8145" }} />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <button
                   className="btn-dark w-full"
-                  style={plan.popular ? { background: "#5CADD4" } : {}}
+                  style={plan.popular ? { background: "#6C8145" } : {}}
                 >
                   Bu Planı Seç
                 </button>
@@ -157,7 +157,7 @@ export default function AbonelikPage() {
                 </div>
                 <div className="mb-6 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
                   {plan.custom ? (
-                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5CADD4" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#6C8145" }}>
                       Teklif Alın
                     </span>
                   ) : (
@@ -172,7 +172,7 @@ export default function AbonelikPage() {
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2.5" style={{ fontSize: "0.8125rem", color: "#6B6868" }}>
-                      <Check size={12} className="flex-shrink-0 mt-0.5" style={{ color: "#5CADD4" }} />
+                      <Check size={12} className="flex-shrink-0 mt-0.5" style={{ color: "#6C8145" }} />
                       {f}
                     </li>
                   ))}

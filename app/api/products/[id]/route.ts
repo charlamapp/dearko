@@ -1,31 +1,29 @@
 import { NextResponse } from "next/server"
-import { readFileSync, writeFileSync } from "fs"
-import { join } from "path"
-
-const FILE = join(process.cwd(), "data", "products.json")
-
-function read() {
-  return JSON.parse(readFileSync(FILE, "utf-8"))
-}
-function write(data: unknown) {
-  writeFileSync(FILE, JSON.stringify(data, null, 2), "utf-8")
-}
+import { isAdminRequest } from "@/lib/admin-auth"
+import { getProductById, upsertProduct, deleteProduct } from "@/lib/products"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminRequest())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const { id } = await params
   const body = await req.json()
-  const products = read()
-  const idx = products.findIndex((p: { id: string }) => p.id === id)
-  if (idx === -1) return NextResponse.json({ error: "not found" }, { status: 404 })
-  products[idx] = { ...products[idx], ...body }
-  write(products)
-  return NextResponse.json(products[idx])
+  const existing = await getProductById(id)
+  if (!existing) return NextResponse.json({ error: "not found" }, { status: 404 })
+  const updated = { ...existing, ...body, id }
+  try {
+    await upsertProduct(updated)
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : "kayıt hatası" }, { status: 500 })
+  }
+  return NextResponse.json(updated)
 }
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminRequest())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const { id } = await params
-  const products = read()
-  const filtered = products.filter((p: { id: string }) => p.id !== id)
-  write(filtered)
+  try {
+    await deleteProduct(id)
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : "silme hatası" }, { status: 500 })
+  }
   return NextResponse.json({ ok: true })
 }

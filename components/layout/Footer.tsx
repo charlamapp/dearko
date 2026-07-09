@@ -43,7 +43,6 @@ const cols = [
       { href: "/hakkimizda", label: "Hakkımızda" },
       { href: "/iletisim",   label: "İletişim" },
       { href: "/iletisim",   label: "Kariyer" },
-      { href: "/admin",      label: "Yönetim Paneli" },
     ],
   },
 ]
@@ -51,6 +50,27 @@ const cols = [
 export default function Footer() {
   const [email, setEmail] = useState("")
   const [done, setDone] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
+
+  async function subscribe(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email || busy) return
+    setBusy(true); setError("")
+    try {
+      const res = await fetch("/api/popup/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "footer" }),
+      })
+      if (res.ok) setDone(true)
+      else setError("Kayıt yapılamadı. Lütfen tekrar deneyin.")
+    } catch {
+      setError("Bağlantı hatası. Lütfen tekrar deneyin.")
+    } finally {
+      setBusy(false)
+    }
+  }
 
   return (
     <footer style={{ background: "#FFFFFF", borderTop: "1px solid #E8E8E8" }}>
@@ -69,18 +89,24 @@ export default function Footer() {
               </p>
             </div>
             {done ? (
-              <p style={{ fontSize: "0.875rem", color: "#5CADD4", fontFamily: "var(--font-inter)", fontWeight: 600, flexShrink: 0 }}>
+              <p style={{ fontSize: "0.875rem", color: "#6C8145", fontFamily: "var(--font-inter)", fontWeight: 600, flexShrink: 0 }}>
                 ✓ Abone oldunuz. Teşekkürler!
               </p>
             ) : (
-              <form className="flex w-full lg:w-auto gap-0" onSubmit={(e) => { e.preventDefault(); if (email) setDone(true) }}>
-                <input
-                  type="email" placeholder="E-posta adresiniz"
-                  value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="input" style={{ minWidth: "240px" }}
-                />
-                <button type="submit" className="btn-dark flex-shrink-0">Abone Ol</button>
-              </form>
+              <div className="w-full lg:w-auto">
+                <form className="flex gap-0" onSubmit={subscribe}>
+                  <input
+                    type="email" placeholder="E-posta adresiniz" required
+                    aria-label="Bülten için e-posta adresiniz"
+                    value={email} onChange={(e) => setEmail(e.target.value)}
+                    className="input" style={{ minWidth: "240px" }}
+                  />
+                  <button type="submit" disabled={busy} className="btn-dark flex-shrink-0" style={{ opacity: busy ? 0.6 : 1 }}>
+                    {busy ? "Gönderiliyor…" : "Abone Ol"}
+                  </button>
+                </form>
+                {error && <p role="alert" style={{ fontSize: "0.75rem", color: "#e53e3e", marginTop: "0.5rem" }}>{error}</p>}
+              </div>
             )}
           </div>
         </div>
@@ -94,7 +120,7 @@ export default function Footer() {
           <div>
             <div className="flex flex-col items-start gap-1.5 mb-6">
               <svg width="26" height="35" viewBox="0 0 28 38" fill="none">
-                <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4" />
+                <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
                 <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
               </svg>
               <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.58rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B", textTransform: "uppercase" }}>
@@ -102,7 +128,7 @@ export default function Footer() {
               </span>
             </div>
             <p style={{ fontSize: "0.8125rem", color: "#8A8A8A", lineHeight: 1.7, maxWidth: "14rem" }}>
-              İstanbul'dan dünyaya, specialty kahvede yeni standart. 2019'dan bu yana.
+              İstanbul&apos;dan dünyaya, specialty kahvede yeni standart. 2019&apos;dan bu yana.
             </p>
             <div className="flex items-center gap-3 mt-5">
               <a href="#" style={{ color: "#8A8A8A", display: "flex" }} className="hover:opacity-60"><IconInstagram /></a>

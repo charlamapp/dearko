@@ -11,23 +11,19 @@ function adminClient() {
 
 export async function GET() {
   if (!(await isAdminRequest())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const supabase = adminClient()
-  const { data, error } = await supabase
-    .from("reservations")
+  const { data, error } = await adminClient()
+    .from("customer_summary")
     .select("*")
     .order("created_at", { ascending: false })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  return NextResponse.json(data ?? [])
 }
 
 export async function PATCH(req: Request) {
   if (!(await isAdminRequest())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const { id, status, admin_notes } = await req.json()
-  const supabase = adminClient()
-  const updates: Record<string, string> = {}
-  if (status !== undefined) updates.status = status
-  if (admin_notes !== undefined) updates.admin_notes = admin_notes
-  const { error } = await supabase.from("reservations").update(updates).eq("id", id)
+  const { id, notes } = await req.json()
+  if (!id) return NextResponse.json({ error: "id zorunlu" }, { status: 400 })
+  const { error } = await adminClient().from("profiles").update({ notes }).eq("id", id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

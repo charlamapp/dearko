@@ -58,7 +58,7 @@ export default function Header() {
     <>
       {/* Duyuru çubuğu */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center h-11 px-4"
-        style={{ background: "#5CADD4" }}>
+        style={{ background: "#6C8145" }}>
         <p style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)", fontWeight: 600, letterSpacing: "0.02em", color: "#fff", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
           {announcements[annIdx]}
         </p>
@@ -88,7 +88,7 @@ export default function Header() {
           {/* Merkez: logo */}
           <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 no-underline">
             <svg width="26" height="35" viewBox="0 0 28 38" fill="none">
-              <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4" />
+              <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
               <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
             </svg>
             <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.58rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B", textTransform: "uppercase" }}>
@@ -140,7 +140,7 @@ export default function Header() {
               <ShoppingBag size={20} strokeWidth={1.75} />
               {count > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-4 h-4 flex items-center justify-center text-white"
-                  style={{ background: "#5CADD4", fontSize: "0.58rem", fontWeight: 700, fontFamily: "var(--font-inter)", borderRadius: "50%" }}>
+                  style={{ background: "#6C8145", fontSize: "0.58rem", fontWeight: 700, fontFamily: "var(--font-inter)", borderRadius: "50%" }}>
                   {count > 9 ? "9+" : count}
                 </span>
               )}
@@ -160,7 +160,7 @@ export default function Header() {
             <div className="flex items-center justify-between px-5 h-16" style={{ borderBottom: "1px solid #F0F0F0" }}>
               <div className="flex items-center gap-2.5">
                 <svg width="20" height="28" viewBox="0 0 28 38" fill="none">
-                  <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4" />
+                  <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
                   <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
                 </svg>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "#2C2B2B" }}>DEARKO</span>
@@ -177,7 +177,7 @@ export default function Header() {
                   style={{
                     fontFamily: "var(--font-inter)", fontSize: "0.9375rem", fontWeight: 600,
                     textTransform: "uppercase", letterSpacing: "0.04em",
-                    color: pathname === href ? "#5CADD4" : "#2C2B2B",
+                    color: pathname === href ? "#6C8145" : "#2C2B2B",
                     textDecoration: "none", borderBottom: "1px solid #F5F5F5",
                   }}>
                   {label}

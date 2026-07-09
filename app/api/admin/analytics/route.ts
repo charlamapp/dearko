@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { isAdminRequest } from "@/lib/admin-auth"
 
 function supabase() {
   return createClient(
@@ -8,8 +9,8 @@ function supabase() {
   )
 }
 
-export async function GET(req: NextRequest) {
-  if (req.headers.get("x-admin-pw") !== "dearko2024") {
+export async function GET() {
+  if (!(await isAdminRequest())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 

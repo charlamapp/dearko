@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
+import { readFileSync } from "fs"
+import { join } from "path"
 import { createClient } from "@supabase/supabase-js"
+import { isAdminRequest } from "@/lib/admin-auth"
 
 function sb() {
   return createClient(
@@ -10,11 +13,7 @@ function sb() {
 
 function localFallback() {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const raw = require("fs").readFileSync(
-      require("path").join(process.cwd(), "data", "content.json"), "utf-8"
-    )
-    return JSON.parse(raw)
+    return JSON.parse(readFileSync(join(process.cwd(), "data", "content.json"), "utf-8"))
   } catch { return null }
 }
 
@@ -40,6 +39,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
+  if (!(await isAdminRequest())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const { section, data } = await req.json()
 
   const { error } = await sb()

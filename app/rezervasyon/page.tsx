@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Check, ChevronRight } from "lucide-react"
 import { timeSlots, vehicleServices } from "@/lib/data"
 
@@ -62,13 +63,13 @@ export default function Rezervasyon() {
 
   if (done) return (
     <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "1.5rem", paddingTop: "6.25rem" }}>
-      <div style={{ width: "3rem", height: "3rem", display: "flex", alignItems: "center", justifyContent: "center", background: "#5CADD4", marginBottom: "2rem" }}>
+      <div style={{ width: "3rem", height: "3rem", display: "flex", alignItems: "center", justifyContent: "center", background: "#6C8145", marginBottom: "2rem" }}>
         <Check size={20} color="white" />
       </div>
       <h2 className="heading-md text-center mb-3">Rezervasyonunuz alındı.</h2>
       <p style={{ fontSize: "0.875rem", color: "#6B6868", textAlign: "center", marginBottom: "0.5rem" }}>{form.email} adresine onay gönderdik.</p>
       <p style={{ fontSize: "0.875rem", color: "#6B6868", textAlign: "center", marginBottom: "2.5rem" }}>24 saat içinde geri döneceğiz.</p>
-      <a href="/" className="btn-dark">Ana Sayfaya Dön</a>
+      <Link href="/" className="btn-dark">Ana Sayfaya Dön</Link>
     </div>
   )
 
@@ -92,7 +93,7 @@ export default function Rezervasyon() {
                 <div key={s} className="flex items-center gap-3 py-1.5">
                   <div style={{
                     width: "1.25rem", height: "1.25rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                    background: i < step ? "#5CADD4" : i === step ? "#2C2B2B" : "transparent",
+                    background: i < step ? "#6C8145" : i === step ? "#2C2B2B" : "transparent",
                     border: i < step || i === step ? "none" : "1px solid #E8E8E8",
                     fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700,
                     color: i < step || i === step ? "#fff" : "#6B6868",
@@ -113,7 +114,7 @@ export default function Rezervasyon() {
             {/* Mobile progress */}
             <div className="flex gap-1.5 mb-10 lg:hidden">
               {steps.map((_, i) => (
-                <div key={i} className="h-0.5 flex-1 transition-colors" style={{ background: i <= step ? "#5CADD4" : "#E8E8E8" }} />
+                <div key={i} className="h-0.5 flex-1 transition-colors" style={{ background: i <= step ? "#6C8145" : "#E8E8E8" }} />
               ))}
             </div>
 
@@ -134,8 +135,8 @@ export default function Rezervasyon() {
                           flexShrink: 0, padding: "0.5rem 0.75rem",
                           fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 500,
                           border: "1px solid", borderRadius: 0,
-                          borderColor: form.date === dateStr ? "#5CADD4" : "#E8E8E8",
-                          background: form.date === dateStr ? "#5CADD4" : "transparent",
+                          borderColor: form.date === dateStr ? "#6C8145" : "#E8E8E8",
+                          background: form.date === dateStr ? "#6C8145" : "transparent",
                           color: form.date === dateStr ? "#fff" : disabled ? "#E8E8E8" : "#6B6868",
                           opacity: disabled ? 0.4 : 1, cursor: disabled ? "not-allowed" : "pointer",
                         }}
@@ -155,8 +156,8 @@ export default function Rezervasyon() {
                         style={{
                           padding: "0.625rem", fontFamily: "var(--font-inter)", fontSize: "0.8rem",
                           border: "1px solid", borderRadius: 0,
-                          borderColor: form.startTime === t ? "#5CADD4" : "#E8E8E8",
-                          background: form.startTime === t ? "#5CADD4" : "transparent",
+                          borderColor: form.startTime === t ? "#6C8145" : "#E8E8E8",
+                          background: form.startTime === t ? "#6C8145" : "transparent",
                           color: form.startTime === t ? "#fff" : "#6B6868", cursor: "pointer",
                         }}
                       >
@@ -186,7 +187,7 @@ export default function Rezervasyon() {
                     className="text-left p-6"
                     style={{
                       border: "1px solid", borderRadius: 0,
-                      borderColor: form.service === svc.id ? "#5CADD4" : "#E8E8E8",
+                      borderColor: form.service === svc.id ? "#6C8145" : "#E8E8E8",
                       background: form.service === svc.id ? "#EBF4FB" : "#FFFFFF",
                       cursor: "pointer",
                     }}
@@ -195,7 +196,7 @@ export default function Rezervasyon() {
                     <div style={{ fontFamily: "var(--font-inter)", fontSize: "0.9375rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#2C2B2B", marginBottom: "0.3rem" }}>{svc.name}</div>
                     <div style={{ fontSize: "0.8rem", color: "#6B6868" }}>{svc.desc}</div>
                     {form.service === svc.id && (
-                      <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem", color: "#5CADD4" }}>
+                      <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem", color: "#6C8145" }}>
                         <Check size={11} /> Seçildi
                       </div>
                     )}

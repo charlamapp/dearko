@@ -72,10 +72,10 @@ export default function HakkimizdaPage() {
 
       <section className="section" style={{ background: "#FFFFFF", borderTop: "1px solid #E8E8E8" }}>
         <div className="wrap-narrow">
-          <p className="label-ink mb-14">2019'dan Bugüne</p>
+          <p className="label-ink mb-14">2019&apos;dan Bugüne</p>
           {(data?.milestones ?? []).map(({ year, event }) => (
             <div key={year} className="flex gap-8 py-5" style={{ borderBottom: "1px solid #E8E8E8" }}>
-              <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, color: "#5CADD4", width: "3rem", flexShrink: 0, paddingTop: "0.1rem" }}>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, color: "#6C8145", width: "3rem", flexShrink: 0, paddingTop: "0.1rem" }}>
                 {year}
               </span>
               <span style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "#2C2B2B" }}>{event}</span>

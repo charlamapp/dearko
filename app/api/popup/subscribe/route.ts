@@ -7,11 +7,12 @@ function sb() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, discount_code } = await req.json()
+    const { email, discount_code, source } = await req.json()
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Geçersiz e-posta" }, { status: 400 })
     }
-    const { error } = await sb().from("subscribers").upsert({ email, discount_code, source: "popup" }, { onConflict: "email", ignoreDuplicates: true })
+    const src = source === "footer" ? "footer" : "popup"
+    const { error } = await sb().from("subscribers").upsert({ email, discount_code, source: src }, { onConflict: "email", ignoreDuplicates: true })
     if (error) return NextResponse.json({ ok: false })
     return NextResponse.json({ ok: true })
   } catch {

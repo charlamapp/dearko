@@ -100,18 +100,18 @@ export default function SiparisDetay() {
                         <div className="flex flex-col items-center">
                           <div className="flex items-center w-full">
                             {i > 0 && (
-                              <div style={{ flex: 1, height: "2px", background: i <= currentStep ? "#5CADD4" : "#E8E8E8" }} />
+                              <div style={{ flex: 1, height: "2px", background: i <= currentStep ? "#6C8145" : "#E8E8E8" }} />
                             )}
                             <div style={{
                               width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-                              background: done ? "#5CADD4" : "#FFFFFF",
-                              border: `2px solid ${done ? "#5CADD4" : "#E8E8E8"}`,
+                              background: done ? "#6C8145" : "#FFFFFF",
+                              border: `2px solid ${done ? "#6C8145" : "#E8E8E8"}`,
                               display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
                               {done && <Check size={13} color="white" strokeWidth={3} />}
                             </div>
                             {i < steps.length - 1 && (
-                              <div style={{ flex: 1, height: "2px", background: i < currentStep ? "#5CADD4" : "#E8E8E8" }} />
+                              <div style={{ flex: 1, height: "2px", background: i < currentStep ? "#6C8145" : "#E8E8E8" }} />
                             )}
                           </div>
                           <p style={{
@@ -131,9 +131,9 @@ export default function SiparisDetay() {
 
             {/* Kargo takip */}
             {isShipped && order.tracking_number && (
-              <div style={{ border: "1px solid #5CADD4", background: "#EFF8FE", padding: "1.25rem 1.5rem" }}>
+              <div style={{ border: "1px solid #6C8145", background: "#EFF8FE", padding: "1.25rem 1.5rem" }}>
                 <div className="flex items-start gap-3">
-                  <Truck size={18} style={{ color: "#5CADD4", flexShrink: 0, marginTop: "0.1rem" }} />
+                  <Truck size={18} style={{ color: "#6C8145", flexShrink: 0, marginTop: "0.1rem" }} />
                   <div>
                     <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#2C2B2B", marginBottom: "0.25rem" }}>
                       {order.tracking_carrier ?? "Kargo"}

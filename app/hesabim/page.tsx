@@ -20,7 +20,7 @@ type Profile = {
 
 const statusLabel: Record<string, { label: string; color: string }> = {
   pending:   { label: "Beklemede",     color: "#F59E0B" },
-  paid:      { label: "Ödendi",        color: "#5CADD4" },
+  paid:      { label: "Ödendi",        color: "#6C8145" },
   preparing: { label: "Hazırlanıyor",  color: "#8B5CF6" },
   shipped:   { label: "Kargoda",       color: "#3B82F6" },
   delivered: { label: "Teslim Edildi", color: "#1A7A3F" },

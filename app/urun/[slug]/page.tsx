@@ -184,7 +184,7 @@ export default function ProductPage() {
                 : ["Orijinal ürün garantisi", "Hızlı kargo", "500₺ üzeri ücretsiz kargo"]
               ).map((item) => (
                 <p key={item} className="flex items-center gap-2" style={{ fontSize: "0.8rem", color: "#6B6868" }}>
-                  <Check size={12} style={{ color: "#5CADD4", flexShrink: 0 }} />{item}
+                  <Check size={12} style={{ color: "#6C8145", flexShrink: 0 }} />{item}
                 </p>
               ))}
             </div>

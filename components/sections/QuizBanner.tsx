@@ -17,13 +17,13 @@ export default function QuizBanner() {
       <div style={{
         position: "absolute", right: -120, top: -120,
         width: 480, height: 480, borderRadius: "50%",
-        border: "1px solid rgba(92,173,212,0.12)",
+        border: "1px solid rgba(108,129,69,0.12)",
         pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", right: -60, top: -60,
         width: 320, height: 320, borderRadius: "50%",
-        border: "1px solid rgba(92,173,212,0.08)",
+        border: "1px solid rgba(108,129,69,0.08)",
         pointerEvents: "none",
       }} />
 
@@ -35,9 +35,9 @@ export default function QuizBanner() {
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
-            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#5CADD4", marginBottom: "1rem" }}>
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6C8145", marginBottom: "1rem" }}>
               Kahve Profil Testi
             </p>
             <h2 style={{
@@ -54,12 +54,12 @@ export default function QuizBanner() {
             <Link href="/quiz"
               style={{
                 display: "inline-flex", alignItems: "center", gap: "0.6rem",
-                padding: "0.95rem 2rem", background: "#5CADD4", color: "#fff",
+                padding: "0.95rem 2rem", background: "#6C8145", color: "#fff",
                 fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700,
                 letterSpacing: "0.07em", textTransform: "uppercase", textDecoration: "none",
                 transition: "background 0.2s",
               }}
-              className="hover:bg-[#4a9bc0]"
+              className="hover:bg-[#57692F]"
             >
               Teste Başla
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -73,7 +73,7 @@ export default function QuizBanner() {
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+            transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.1 }}
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}
           >
             {steps.map((s, i) => (
@@ -90,10 +90,10 @@ export default function QuizBanner() {
                 }}
               >
                 <div style={{
-                  width: 42, height: 42, background: "rgba(92,173,212,0.12)",
+                  width: 42, height: 42, background: "rgba(108,129,69,0.12)",
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                 }}>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#5CADD4" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#6C8145" }}>
                     {s.num}
                   </span>
                 </div>

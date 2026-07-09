@@ -48,7 +48,7 @@ const stagger = {
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const } },
 }
 
 export default function TrustBar() {
@@ -65,7 +65,7 @@ export default function TrustBar() {
         >
           {pillars.map((p, i) => (
             <motion.div key={i} variants={item} className="flex items-center gap-3.5 py-5 px-4 lg:px-6">
-              <div style={{ color: "#5CADD4", flexShrink: 0 }}>{p.icon}</div>
+              <div style={{ color: "#6C8145", flexShrink: 0 }}>{p.icon}</div>
               <div>
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.84rem", fontWeight: 700, color: "#1A1919", marginBottom: "0.15rem", letterSpacing: "-0.01em" }}>
                   {p.title}

@@ -56,7 +56,7 @@ export default function IletisimPage() {
 
           {sent ? (
             <div className="flex flex-col justify-center">
-              <div className="w-10 h-10 flex items-center justify-center mb-6" style={{ background: "#5CADD4" }}>
+              <div className="w-10 h-10 flex items-center justify-center mb-6" style={{ background: "#6C8145" }}>
                 <Check size={16} color="white" />
               </div>
               <h3 className="heading-md mb-2">Mesajınız ulaştı.</h3>

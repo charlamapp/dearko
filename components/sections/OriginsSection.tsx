@@ -16,7 +16,7 @@ export default function OriginsSection() {
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
             <p className="label mb-5">Direkt Ticaret</p>
             <h2 className="heading-lg mb-7">12 Ülke,<br />Tek Fincan.</h2>
@@ -50,7 +50,7 @@ export default function OriginsSection() {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.1 }}
           >
             <div className="aspect-[4/5] overflow-hidden" style={{ background: "#F5F5F5" }}>
               <motion.img
@@ -58,13 +58,13 @@ export default function OriginsSection() {
                 alt="Kahve çiftçisi"
                 className="w-full h-full object-cover"
                 whileHover={{ scale: 1.04 }}
-                transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }}
               />
             </div>
             {/* Floating stat */}
             <motion.div
               className="absolute -bottom-4 -left-4 lg:-left-8 p-5"
-              style={{ background: "#5CADD4", minWidth: "140px" }}
+              style={{ background: "#6C8145", minWidth: "140px" }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

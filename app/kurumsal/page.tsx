@@ -50,7 +50,7 @@ export default function KurumsalPage() {
                 "Özel etiket ve ambalaj seçeneği",
               ].map((item) => (
                 <li key={item} className="flex gap-3" style={{ fontSize: "0.875rem", color: "#6B6868" }}>
-                  <Check size={13} style={{ color: "#5CADD4", flexShrink: 0, marginTop: "0.15rem" }} />
+                  <Check size={13} style={{ color: "#6C8145", flexShrink: 0, marginTop: "0.15rem" }} />
                   {item}
                 </li>
               ))}
@@ -73,7 +73,7 @@ export default function KurumsalPage() {
                 </div>
                 <div className="mb-6 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
                   {plan.custom ? (
-                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5CADD4" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#6C8145" }}>
                       Teklif Alın
                     </span>
                   ) : (
@@ -88,7 +88,7 @@ export default function KurumsalPage() {
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2.5" style={{ fontSize: "0.8125rem", color: "#6B6868" }}>
-                      <Check size={12} style={{ color: "#5CADD4", flexShrink: 0, marginTop: "0.15rem" }} />
+                      <Check size={12} style={{ color: "#6C8145", flexShrink: 0, marginTop: "0.15rem" }} />
                       {f}
                     </li>
                   ))}

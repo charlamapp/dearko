@@ -13,7 +13,7 @@ export default function CorporateBanner() {
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
             <p className="label mb-4">Kurumsal</p>
             <h2 className="heading-lg mb-6">Ofisinizde<br />Specialty Kahve.</h2>
@@ -32,14 +32,14 @@ export default function CorporateBanner() {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.1 }}
           >
             <motion.img
               src="https://images.unsplash.com/photo-1497935586047-9395ee010a64?w=900&q=85"
               alt="Kurumsal kahve"
               className="w-full h-full object-cover"
               whileHover={{ scale: 1.04 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }}
             />
           </motion.div>
 

@@ -14,7 +14,7 @@ const config: Config = {
         ink:     "#2C2B2B",
         muted:   "#6B6868",
         line:    "#E8E8E8",
-        sky:     "#5CADD4",
+        sky:     "#6C8145",
         btn:     "#3D3B38",
       },
       fontFamily: {

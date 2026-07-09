@@ -125,7 +125,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
             <h1 className="heading-xl whitespace-pre-line mb-3 lg:mb-5"
               style={{ color: "#fff", maxWidth: "clamp(16rem, 80vw, 24rem)", textShadow: "0 2px 24px rgba(0,0,0,0.35)", fontSize: "clamp(1.75rem, 6vw, 4.25rem)" }}>

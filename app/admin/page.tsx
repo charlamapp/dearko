@@ -5,17 +5,6 @@ import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
   Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift,
 } from "lucide-react"
-import { createClient as createSupabaseClient } from "@supabase/supabase-js"
-
-function adminSupabase() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
-const ADMIN_PASSWORD = "dearko2024"
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Product = {
@@ -68,24 +57,45 @@ type Customer = {
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
+  const [checking, setChecking] = useState(true)
   const [pw, setPw]         = useState("")
   const [pwError, setPwError] = useState(false)
 
   useEffect(() => {
-    if (sessionStorage.getItem("dk-admin") === "1") setAuthed(true)
+    fetch("/api/admin/login")
+      .then((r) => r.json())
+      .then((d) => setAuthed(Boolean(d.authed)))
+      .catch(() => {})
+      .finally(() => setChecking(false))
   }, [])
 
-  function login() {
-    if (pw === ADMIN_PASSWORD) { sessionStorage.setItem("dk-admin", "1"); setAuthed(true) }
+  async function login() {
+    const res = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pw }),
+    })
+    if (res.ok) { setAuthed(true); setPw("") }
     else { setPwError(true); setTimeout(() => setPwError(false), 1500) }
   }
+
+  async function logout() {
+    await fetch("/api/admin/login", { method: "DELETE" })
+    setAuthed(false); setPw("")
+  }
+
+  if (checking) return (
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 
   if (!authed) return (
     <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: "360px", padding: "2rem" }}>
         <div className="flex flex-col items-center mb-10">
           <svg width="32" height="44" viewBox="0 0 28 38" fill="none" className="mb-3">
-            <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4" />
+            <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
             <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
           </svg>
           <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "#2C2B2B" }}>DEARKO ADMIN</span>
@@ -103,14 +113,11 @@ export default function AdminPage() {
           {pwError && <p style={{ fontSize: "0.8rem", color: "#e53e3e", textAlign: "center" }}>Şifre hatalı</p>}
           <button onClick={login} className="btn-dark w-full justify-center">Giriş Yap</button>
         </div>
-        <p style={{ fontSize: "0.72rem", color: "#6B6868", textAlign: "center", marginTop: "2rem" }}>
-          Varsayılan şifre: dearko2024
-        </p>
       </div>
     </div>
   )
 
-  return <AdminPanel onLogout={() => { sessionStorage.removeItem("dk-admin"); setAuthed(false); setPw("") }} />
+  return <AdminPanel onLogout={logout} />
 }
 
 // ─── Panel ────────────────────────────────────────────────────────────────────
@@ -128,7 +135,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 px-5 py-3"
           style={{ background: "#2C2B2B", color: "#fff", fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 500 }}>
-          <Check size={13} style={{ color: "#5CADD4" }} /> {toast}
+          <Check size={13} style={{ color: "#6C8145" }} /> {toast}
         </div>
       )}
 
@@ -257,7 +264,7 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
   const visitorsRef  = useRef(visitors)
   const dragging     = useRef(false)
   const autoRotate   = useRef(true)
-  const resumeTimer  = useRef<ReturnType<typeof setTimeout>>()
+  const resumeTimer  = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lastMouse    = useRef({ x: 0, y: 0 })
 
   useEffect(() => { visitorsRef.current = visitors }, [visitors])
@@ -366,16 +373,16 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
         const pr = Math.min(13, 6 + Math.log2(Math.max(1, v.count)) * 2)
 
         const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, pr * 4.5)
-        grd.addColorStop(0, "rgba(92,173,212,0.55)")
-        grd.addColorStop(1, "rgba(92,173,212,0)")
+        grd.addColorStop(0, "rgba(108,129,69,0.55)")
+        grd.addColorStop(1, "rgba(108,129,69,0)")
         ctx.beginPath(); ctx.arc(sx, sy, pr * 4.5, 0, Math.PI * 2)
         ctx.fillStyle = grd; ctx.fill()
 
         ctx.beginPath(); ctx.arc(sx, sy, pr * 2, 0, Math.PI * 2)
-        ctx.strokeStyle = "rgba(92,173,212,0.35)"; ctx.lineWidth = 1.5; ctx.stroke()
+        ctx.strokeStyle = "rgba(108,129,69,0.35)"; ctx.lineWidth = 1.5; ctx.stroke()
 
         ctx.beginPath(); ctx.arc(sx, sy, pr, 0, Math.PI * 2)
-        ctx.fillStyle = "#5CADD4"; ctx.fill()
+        ctx.fillStyle = "#6C8145"; ctx.fill()
 
         ctx.beginPath(); ctx.arc(sx, sy, pr * 0.38, 0, Math.PI * 2)
         ctx.fillStyle = "#fff"; ctx.fill()
@@ -431,7 +438,7 @@ function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
 
   async function load() {
     try {
-      const r = await fetch("/api/admin/analytics", { headers: { "x-admin-pw": ADMIN_PASSWORD } })
+      const r = await fetch("/api/admin/analytics")
       if (r.ok) { setData(await r.json()); setLastUpdate(new Date()) }
     } finally { setLoading(false) }
   }
@@ -502,10 +509,10 @@ function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
                     <div className="flex items-center gap-2.5 mb-1">
                       <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.68rem", fontWeight: 700, color: "#A0A0A0", width: 14, textAlign: "right", flexShrink: 0 }}>{i + 1}</span>
                       <span style={{ fontSize: "0.8rem", color: "#2C2B2B", flex: 1 }}>{c.name}</span>
-                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#5CADD4", flexShrink: 0 }}>{c.count}</span>
+                      <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#6C8145", flexShrink: 0 }}>{c.count}</span>
                     </div>
                     <div style={{ marginLeft: 22, height: 2.5, background: "#EEF0F2", borderRadius: 2 }}>
-                      <div style={{ height: "100%", width: `${pct}%`, background: "#5CADD4", borderRadius: 2, transition: "width 0.6s ease" }} />
+                      <div style={{ height: "100%", width: `${pct}%`, background: "#6C8145", borderRadius: 2, transition: "width 0.6s ease" }} />
                     </div>
                   </div>
                 )
@@ -521,7 +528,7 @@ function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
                 {data!.recent.slice(0, 10).map((v, i) => (
                   <div key={i} className="flex items-center gap-2 px-3 py-2"
                     style={{ borderBottom: i < 9 ? "1px solid #F5F5F5" : "none" }}>
-                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#5CADD4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.page}</span>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#6C8145", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.page}</span>
                     <span style={{ fontSize: "0.72rem", color: "#6B6868", flexShrink: 0 }}>{v.city ? `${v.city}, ` : ""}{v.country_name ?? v.country}</span>
                     <span style={{ fontSize: "0.65rem", color: "#B0B0B0", fontFamily: "var(--font-inter)", flexShrink: 0 }}>
                       {new Date(v.created_at).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
@@ -536,7 +543,7 @@ function AnalitikSection({ onToast: _ }: { onToast: (m: string) => void }) {
         {/* ── RIGHT: 3D Globe ─────────────────────────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0, position: "relative" }}>
           {/* Live badge */}
-          <div style={{ position: "absolute", top: 16, right: 16, zIndex: 10, display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.85)", padding: "4px 11px", backdropFilter: "blur(8px)", border: "1px solid rgba(92,173,212,0.25)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ position: "absolute", top: 16, right: 16, zIndex: 10, display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.85)", padding: "4px 11px", backdropFilter: "blur(8px)", border: "1px solid rgba(108,129,69,0.25)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 7px rgba(34,197,94,0.8)", display: "inline-block" }} />
             <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, color: "#2C2B2B", letterSpacing: "0.1em" }}>CANLI</span>
           </div>
@@ -566,7 +573,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
   const [loading, setLoading]         = useState(true)
 
   async function load() {
-    const r = await fetch("/api/admin/popup", { headers: { "x-admin-pw": ADMIN_PASSWORD } })
+    const r = await fetch("/api/admin/popup")
     if (r.ok) { const d = await r.json(); setSettings(d.settings); setSubscribers(d.subscribers) }
     setLoading(false)
   }
@@ -577,7 +584,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
     setSaving(true)
     const r = await fetch("/api/admin/popup", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "x-admin-pw": ADMIN_PASSWORD },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     })
     setSaving(false)
@@ -591,7 +598,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
       <SectionHeader title="Promosyon Popup" subtitle="Siteye ilk girişte gösterilen indirim popup'ını yönetin." />
 
       {/* Enable toggle */}
-      <div className="flex items-center justify-between p-4 mb-8" style={{ border: "1px solid #E8E8E8", background: settings.enabled ? "rgba(92,173,212,0.06)" : "#FAFAFA" }}>
+      <div className="flex items-center justify-between p-4 mb-8" style={{ border: "1px solid #E8E8E8", background: settings.enabled ? "rgba(108,129,69,0.06)" : "#FAFAFA" }}>
         <div>
           <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 700, color: "#2C2B2B" }}>
             Pop-up {settings.enabled ? "Aktif" : "Kapalı"}
@@ -604,7 +611,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
           onClick={() => setSettings((s) => s ? { ...s, enabled: !s.enabled } : s)}
           style={{
             width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer", position: "relative", flexShrink: 0,
-            background: settings.enabled ? "#5CADD4" : "#D0D0D0", transition: "background 0.2s",
+            background: settings.enabled ? "#6C8145" : "#D0D0D0", transition: "background 0.2s",
           }}
         >
           <span style={{
@@ -642,7 +649,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
           <Field label={`Gecikme: ${settings.delay_seconds} saniye`}>
             <input type="range" min={1} max={15} value={settings.delay_seconds}
               onChange={(e) => setSettings((s) => s ? { ...s, delay_seconds: +e.target.value } : s)}
-              style={{ width: "100%", accentColor: "#5CADD4" }} />
+              style={{ width: "100%", accentColor: "#6C8145" }} />
           </Field>
         </div>
       </div>
@@ -674,7 +681,7 @@ function PromosyonSection({ onToast }: { onToast: (m: string) => void }) {
               <div key={sub.id} className="flex items-center px-4 py-3"
                 style={{ borderBottom: i < subscribers.length - 1 ? "1px solid #F5F5F5" : "none" }}>
                 <span style={{ fontSize: "0.875rem", color: "#2C2B2B", flex: 1 }}>{sub.email}</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#5CADD4", width: 128 }}>{sub.discount_code ?? "—"}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 700, color: "#6C8145", width: 128 }}>{sub.discount_code ?? "—"}</span>
                 <span style={{ fontSize: "0.75rem", color: "#8A8A8A", width: 112 }}>
                   {new Date(sub.created_at).toLocaleDateString("tr-TR")}
                 </span>
@@ -795,7 +802,7 @@ function ProductsSection({ onToast }: { onToast: (m: string) => void }) {
 
       {filtered.length === 0 ? (
         <div className="py-24 text-center">
-          <p style={{ fontSize: "0.875rem", color: "#6B6868" }}>Henüz ürün yok. "Yeni Ürün" butonuyla ekleyin.</p>
+          <p style={{ fontSize: "0.875rem", color: "#6B6868" }}>Henüz ürün yok. &quot;Yeni Ürün&quot; butonuyla ekleyin.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -1202,7 +1209,7 @@ function HakkimizdaSection({ onToast }: { onToast: (m: string) => void }) {
           <div className="flex items-center justify-between mb-3">
             <label className="label-ink">Kilometre Taşları</label>
             <button onClick={addMilestone}
-              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer" }}>
+              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer" }}>
               + Ekle
             </button>
           </div>
@@ -1482,7 +1489,7 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
           <div className="flex items-center justify-between mb-3">
             <label className="label-ink">Fiyatlandırma Tablosu</label>
             <button onClick={addPriceRow}
-              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer" }}>
+              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer" }}>
               + Satır Ekle
             </button>
           </div>
@@ -1503,7 +1510,7 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
           <div className="flex items-center justify-between mb-3">
             <label className="label-ink">Galeri Görselleri</label>
             <button onClick={() => galleryRef.current?.click()}
-              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer" }}>
+              style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer" }}>
               + Görsel Ekle
             </button>
           </div>
@@ -1551,7 +1558,7 @@ type AdminOrder = {
 
 const orderStatuses = [
   { id: "pending",   label: "Beklemede",     color: "#F59E0B" },
-  { id: "paid",      label: "Ödendi",        color: "#5CADD4" },
+  { id: "paid",      label: "Ödendi",        color: "#6C8145" },
   { id: "preparing", label: "Hazırlanıyor",  color: "#8B5CF6" },
   { id: "shipped",   label: "Kargoda",       color: "#3B82F6" },
   { id: "delivered", label: "Teslim Edildi", color: "#1A7A3F" },
@@ -1571,7 +1578,7 @@ function SiparislerSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function load() {
     setLoading(true)
-    const res = await fetch("/api/admin/orders", { headers: { "x-admin-pw": "dearko2024" } })
+    const res = await fetch("/api/admin/orders")
     const data = await res.json()
     setOrders(Array.isArray(data) ? data : [])
     setLoading(false)
@@ -1586,7 +1593,7 @@ function SiparislerSection({ onToast }: { onToast: (m: string) => void }) {
     setSaving(true)
     await fetch("/api/admin/orders", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "x-admin-pw": "dearko2024" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: selected.id, status: editStatus, tracking_number: editTracking || null }),
     })
     setSaving(false)
@@ -1657,7 +1664,7 @@ function SiparislerSection({ onToast }: { onToast: (m: string) => void }) {
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, display: "inline-block", flexShrink: 0 }} />
                   <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: st.color }}>{st.label}</span>
                 </div>
-                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
+                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
                   Detay
                 </button>
               </div>
@@ -1766,20 +1773,22 @@ function MusterilerSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function load() {
     setLoading(true)
-    const supabase = adminSupabase()
-    const { data } = await supabase
-      .from("customer_summary")
-      .select("*")
-      .order("created_at", { ascending: false })
-    setCustomers(data ?? [])
+    try {
+      const res = await fetch("/api/admin/customers")
+      const data = await res.json()
+      setCustomers(Array.isArray(data) ? data : [])
+    } catch { setCustomers([]) }
     setLoading(false)
   }
 
   async function saveNote() {
     if (!selected) return
     setSavingNote(true)
-    const supabase = adminSupabase()
-    await supabase.from("profiles").update({ notes }).eq("id", selected.id)
+    await fetch("/api/admin/customers", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: selected.id, notes }),
+    })
     setSavingNote(false)
     setSelected((c) => c ? { ...c, notes } : c)
     onToast("Not kaydedildi ✓")
@@ -1828,7 +1837,7 @@ function MusterilerSection({ onToast }: { onToast: (m: string) => void }) {
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>
                   {c.full_name ?? "—"}
-                  {c.newsletter && <span style={{ marginLeft: "0.4rem", fontSize: "0.65rem", background: "#5CADD4", color: "#fff", padding: "0.1rem 0.35rem", fontFamily: "var(--font-inter)", fontWeight: 700 }}>BÜL</span>}
+                  {c.newsletter && <span style={{ marginLeft: "0.4rem", fontSize: "0.65rem", background: "#6C8145", color: "#fff", padding: "0.1rem 0.35rem", fontFamily: "var(--font-inter)", fontWeight: 700 }}>BÜL</span>}
                 </p>
                 <p className="md:hidden" style={{ fontSize: "0.72rem", color: "#6B6868" }}>{c.email}</p>
               </div>
@@ -1837,9 +1846,9 @@ function MusterilerSection({ onToast }: { onToast: (m: string) => void }) {
               <p className="hidden md:block" style={{ fontSize: "0.8rem", color: "#6B6868" }}>{c.city ?? "—"}</p>
               <div className="hidden md:block">
                 <p style={{ fontSize: "0.8rem", color: "#6B6868" }}>{c.order_count} sipariş</p>
-                {c.total_spent > 0 && <p style={{ fontSize: "0.72rem", color: "#5CADD4", fontWeight: 600 }}>₺{(c.total_spent / 100).toLocaleString("tr-TR")}</p>}
+                {c.total_spent > 0 && <p style={{ fontSize: "0.72rem", color: "#6C8145", fontWeight: 600 }}>₺{(c.total_spent / 100).toLocaleString("tr-TR")}</p>}
               </div>
-              <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
+              <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
                 Detay
               </button>
             </div>
@@ -1903,7 +1912,7 @@ type Reservation = {
 }
 
 const rezervasyonStatuses = [
-  { id: "new",       label: "Yeni",          color: "#5CADD4" },
+  { id: "new",       label: "Yeni",          color: "#6C8145" },
   { id: "contacted", label: "İletişime Geçildi", color: "#8B5CF6" },
   { id: "confirmed", label: "Onaylandı",     color: "#1A7A3F" },
   { id: "cancelled", label: "İptal Edildi",  color: "#e53e3e" },
@@ -1929,7 +1938,7 @@ function RezervasyonlarSection({ onToast }: { onToast: (m: string) => void }) {
 
   async function load() {
     setLoading(true)
-    const res = await fetch("/api/admin/rezervasyonlar", { headers: { "x-admin-pw": "dearko2024" } })
+    const res = await fetch("/api/admin/rezervasyonlar")
     const data = await res.json()
     setList(Array.isArray(data) ? data : [])
     setLoading(false)
@@ -1944,7 +1953,7 @@ function RezervasyonlarSection({ onToast }: { onToast: (m: string) => void }) {
     setSaving(true)
     await fetch("/api/admin/rezervasyonlar", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "x-admin-pw": "dearko2024" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: selected.id, status: editStatus, admin_notes: editAdminNotes || null }),
     })
     setSaving(false); onToast("Rezervasyon güncellendi ✓")
@@ -2009,7 +2018,7 @@ function RezervasyonlarSection({ onToast }: { onToast: (m: string) => void }) {
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, display: "inline-block", flexShrink: 0 }} />
                   <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: st.color }}>{st.label}</span>
                 </div>
-                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#5CADD4", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
+                <button style={{ fontSize: "0.72rem", fontFamily: "var(--font-inter)", fontWeight: 600, color: "#6C8145", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}>
                   Detay
                 </button>
               </div>

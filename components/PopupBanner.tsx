@@ -90,7 +90,7 @@ export default function PopupBanner() {
         <div style={{ background: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.18)" }}>
 
           {/* Top accent bar */}
-          <div style={{ height: 4, background: "linear-gradient(90deg, #5CADD4 0%, #3a9ac7 100%)" }} />
+          <div style={{ height: 4, background: "linear-gradient(90deg, #6C8145 0%, #3a9ac7 100%)" }} />
 
           {/* Close */}
           <button
@@ -111,7 +111,7 @@ export default function PopupBanner() {
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                 <svg width="28" height="38" viewBox="0 0 28 38" fill="none">
-                  <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#5CADD4" />
+                  <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
                   <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
                 </svg>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.55rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B", textTransform: "uppercase" }}>DEARKO</span>
@@ -173,7 +173,7 @@ export default function PopupBanner() {
             ) : (
               /* Success state */
               <div style={{ textAlign: "center", padding: "0.5rem 0 1rem" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(92,173,212,0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem" }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(108,129,69,0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem" }}>
                   <span style={{ fontSize: "1.4rem" }}>✓</span>
                 </div>
                 <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1.35rem", fontWeight: 800, color: "#2C2B2B", marginBottom: "0.5rem", letterSpacing: "-0.02em" }}>
@@ -187,7 +187,7 @@ export default function PopupBanner() {
                 <button
                   onClick={copyCode}
                   style={{
-                    width: "100%", background: "#F0F8FC", border: "2px dashed #5CADD4",
+                    width: "100%", background: "#F0F8FC", border: "2px dashed #6C8145",
                     padding: "1.1rem 1.5rem", cursor: "pointer",
                     fontFamily: "var(--font-inter)", fontSize: "1.6rem", fontWeight: 900,
                     letterSpacing: "0.12em", color: "#2C2B2B",
@@ -196,7 +196,7 @@ export default function PopupBanner() {
                   }}
                 >
                   {s.discount_code}
-                  <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#5CADD4", letterSpacing: "0.05em", background: "rgba(92,173,212,0.12)", padding: "3px 8px" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6C8145", letterSpacing: "0.05em", background: "rgba(108,129,69,0.12)", padding: "3px 8px" }}>
                     {copied ? "KOPYALANDI ✓" : "KOPYALA"}
                   </span>
                 </button>
