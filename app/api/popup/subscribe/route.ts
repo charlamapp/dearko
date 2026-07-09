@@ -13,9 +13,15 @@ export async function POST(req: NextRequest) {
     }
     const src = source === "footer" ? "footer" : "popup"
     const { error } = await sb().from("subscribers").upsert({ email, discount_code, source: src }, { onConflict: "email", ignoreDuplicates: true })
-    if (error) return NextResponse.json({ ok: false })
+    // Hata durumunda 200 dönmek istemciye sahte başarı gösterir ve e-postayı
+    // sessizce kaybeder — bu yüzden gerçek hata kodu döndürülür.
+    if (error) {
+      console.error("subscribe error:", error.message)
+      return NextResponse.json({ error: "Kayıt yapılamadı" }, { status: 500 })
+    }
     return NextResponse.json({ ok: true })
-  } catch {
-    return NextResponse.json({ ok: false })
+  } catch (e) {
+    console.error("subscribe error:", e)
+    return NextResponse.json({ error: "Kayıt yapılamadı" }, { status: 500 })
   }
 }
