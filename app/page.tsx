@@ -3,6 +3,7 @@ import TrustBar from "@/components/sections/TrustBar"
 import FeaturedProducts from "@/components/sections/FeaturedProducts"
 import QuizBanner from "@/components/sections/QuizBanner"
 import OriginsSection from "@/components/sections/OriginsSection"
+import CoffeeBloomSection from "@/components/sections/CoffeeBloomSection"
 import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
 import MobileBanner from "@/components/sections/MobileBanner"
 import CorporateBanner from "@/components/sections/CorporateBanner"
@@ -16,6 +17,7 @@ export default function HomePage() {
       <FeaturedProducts />
       <QuizBanner />
       <OriginsSection />
+      <CoffeeBloomSection />
       <SubscriptionBanner />
       <MobileBanner />
       <CorporateBanner />
