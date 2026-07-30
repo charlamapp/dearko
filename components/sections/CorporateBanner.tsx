@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 
 export default function CorporateBanner() {
   return (
-    <section className="section" style={{ background: "#F5F5F5", borderBottom: "1px solid #E8E8E8" }}>
+    <section className="section" style={{ background: "#FFFFFF", borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
 

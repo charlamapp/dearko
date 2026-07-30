@@ -8,20 +8,39 @@ import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
 import MobileBanner from "@/components/sections/MobileBanner"
 import CorporateBanner from "@/components/sections/CorporateBanner"
 import PhilosophySection from "@/components/sections/PhilosophySection"
+import Reveal from "@/components/ui/Reveal"
 
 export default function HomePage() {
   return (
     <div style={{ paddingTop: "6.75rem" }}>
       <Hero />
-      <TrustBar />
-      <FeaturedProducts />
-      <QuizBanner />
-      <OriginsSection />
-      <CoffeeBloomSection />
-      <SubscriptionBanner />
-      <MobileBanner />
-      <CorporateBanner />
-      <PhilosophySection />
+      <Reveal distance={24}>
+        <TrustBar />
+      </Reveal>
+      <Reveal>
+        <FeaturedProducts />
+      </Reveal>
+      <Reveal>
+        <QuizBanner />
+      </Reveal>
+      <Reveal>
+        <OriginsSection />
+      </Reveal>
+      <Reveal distance={60}>
+        <CoffeeBloomSection />
+      </Reveal>
+      <Reveal>
+        <SubscriptionBanner />
+      </Reveal>
+      <Reveal distance={60}>
+        <MobileBanner />
+      </Reveal>
+      <Reveal>
+        <CorporateBanner />
+      </Reveal>
+      <Reveal>
+        <PhilosophySection />
+      </Reveal>
     </div>
   )
 }

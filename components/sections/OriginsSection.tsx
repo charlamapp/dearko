@@ -6,7 +6,7 @@ import { origins } from "@/lib/data"
 
 export default function OriginsSection() {
   return (
-    <section className="section" style={{ background: "#FFFFFF", borderBottom: "1px solid #E8E8E8" }}>
+    <section className="section" style={{ background: "#F7F5F1", borderBottom: "1px solid #EAE7E1" }}>
       <div className="wrap">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
