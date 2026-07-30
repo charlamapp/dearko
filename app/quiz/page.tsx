@@ -404,7 +404,7 @@ export default function QuizPage() {
               <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145"/>
               <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF"/>
             </svg>
-            <span style={{ fontSize: "0.5rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B" }}>DEARKO</span>
+            <span style={{ fontSize: "0.5rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B" }}>MOLA</span>
           </Link>
           {step < questions.length && (
             <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#A0A0A0", letterSpacing: "0.05em" }}>

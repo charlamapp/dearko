@@ -166,7 +166,7 @@ export default function CoffeeBloomSection() {
           letterSpacing: "0.2em", textTransform: "uppercase",
           color: "rgba(255,255,255,0.75)", marginBottom: "1rem",
         }}>
-          DearKo Spesiyal
+          Mola Spesiyal
         </p>
         <h2 className="heading-xl" style={{
           color: "#fff", fontSize: "clamp(1.9rem, 5vw, 3.75rem)",

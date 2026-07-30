@@ -14,7 +14,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: { default: "DearKo Coffee — Specialty Kahve", template: "%s | DearKo" },
+  title: { default: "Mola Coffee — Specialty Kahve", template: "%s | Mola" },
   description: "Specialty kahve — Taze kavrum, direkt ticaret. Etiyopya, Kolombiya, Guatemala ve daha fazlasından tek kökenli kahveler.",
   keywords: ["specialty kahve", "single origin", "taze kavrum", "direkt ticaret", "istanbul kahve"],
 }

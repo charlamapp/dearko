@@ -38,7 +38,7 @@ const cols = [
     ],
   },
   {
-    title: "DearKo",
+    title: "Mola",
     links: [
       { href: "/hakkimizda", label: "Hakkımızda" },
       { href: "/iletisim",   label: "İletişim" },
@@ -124,7 +124,7 @@ export default function Footer() {
                 <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
               </svg>
               <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.58rem", fontWeight: 800, letterSpacing: "0.3em", color: "#2C2B2B", textTransform: "uppercase" }}>
-                DEARKO
+                MOLA
               </span>
             </div>
             <p style={{ fontSize: "0.8125rem", color: "#8A8A8A", lineHeight: 1.7, maxWidth: "14rem" }}>
@@ -159,7 +159,7 @@ export default function Footer() {
       {/* Alt çubuk */}
       <div className="wrap py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p style={{ fontSize: "0.75rem", color: "#A0A0A0" }}>
-          © {new Date().getFullYear()} DearKo Coffee. Tüm hakları saklıdır.
+          © {new Date().getFullYear()} Mola Coffee. Tüm hakları saklıdır.
         </p>
         <div className="flex items-center gap-3">
           <span style={{ fontSize: "0.72rem", color: "#C0C0C0", fontFamily: "var(--font-inter)" }}>Güvenli ödeme:</span>
