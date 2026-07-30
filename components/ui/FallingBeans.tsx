@@ -12,16 +12,24 @@ type Bean = {
   rotateStart: number
   rotateEnd: number
   driftX: number
+  bgPosX: number
+  bgPosY: number
 }
 
-function BeanSVG({ size }: { size: number }) {
+function RealBean({ size, bgPosX, bgPosY }: { size: number; bgPosX: number; bgPosY: number }) {
   return (
-    <svg width={size} height={Math.round(size * 1.4)} viewBox="0 0 24 34" fill="none">
-      <ellipse cx="12" cy="17" rx="11" ry="15.5" fill="#4A2008" />
-      <ellipse cx="12" cy="17" rx="9" ry="13" fill="#7B3F1A" />
-      <ellipse cx="12" cy="17" rx="7.5" ry="11.5" fill="#8B4A20" />
-      <path d="M12 4 Q7.5 17 12 30" stroke="#3B1A08" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-    </svg>
+    <div
+      style={{
+        width: size,
+        height: Math.round(size * 1.4),
+        borderRadius: "50% 48% 52% 50% / 58% 55% 45% 42%",
+        backgroundImage: "url('/coffee-beans.jpg')",
+        backgroundSize: `${size * 14}px auto`,
+        backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+        boxShadow: "0 3px 10px rgba(0,0,0,0.25)",
+        flexShrink: 0,
+      }}
+    />
   )
 }
 
@@ -35,12 +43,15 @@ export default function FallingBeans() {
     const generated: Bean[] = Array.from({ length: 22 }, (_, i) => ({
       id: i,
       left: 2 + Math.random() * 96,
-      size: 22 + Math.random() * 26,
+      size: 28 + Math.random() * 24,
       delay: Math.random() * 1.8,
-      duration: 2.2 + Math.random() * 1.6,
+      duration: 2.4 + Math.random() * 1.8,
       rotateStart: Math.random() * 360,
       rotateEnd: (Math.random() > 0.5 ? 1 : -1) * (200 + Math.random() * 300),
       driftX: (Math.random() - 0.5) * 100,
+      bgPosX: 5 + Math.random() * 90,
+      // Sadece çekirdeklerin yoğun olduğu üst/alt kısımları göster
+      bgPosY: Math.random() > 0.5 ? Math.random() * 28 : 72 + Math.random() * 28,
     }))
 
     setBeans(generated)
@@ -48,7 +59,7 @@ export default function FallingBeans() {
     const t = setTimeout(() => {
       setActive(true)
       sessionStorage.setItem("beans_shown", "1")
-      setTimeout(() => setBeans([]), 6000)
+      setTimeout(() => setBeans([]), 6500)
     }, 2000)
 
     return () => clearTimeout(t)
@@ -72,11 +83,11 @@ export default function FallingBeans() {
           transition={{
             duration: bean.duration,
             delay: bean.delay,
-            ease: [0.2, 0.6, 0.8, 1],
+            ease: [0.2, 0.55, 0.85, 1],
             opacity: { times: [0, 0.55, 0.82, 1], duration: bean.duration, delay: bean.delay },
           }}
         >
-          <BeanSVG size={bean.size} />
+          <RealBean size={bean.size} bgPosX={bean.bgPosX} bgPosY={bean.bgPosY} />
         </motion.div>
       ))}
     </div>
