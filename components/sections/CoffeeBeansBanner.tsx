@@ -10,7 +10,7 @@ export default function CoffeeBeansBanner() {
       {/* Görsel */}
       <div className="relative w-full" style={{ maxHeight: 420 }}>
         <motion.img
-          src="/coffee-beans.jpg"
+          src="https://images.unsplash.com/photo-1573884054824-95ec03df17da?w=1600&q=90"
           alt="Specialty kahve çekirdekleri"
           className="w-full object-cover"
           style={{ objectPosition: "center center", display: "block" }}
