@@ -6,14 +6,14 @@ import { motion } from "framer-motion"
 export default function CoffeeBeansBanner() {
   return (
     <section style={{ background: "#FFFFFF", overflow: "hidden" }}>
-      <div className="relative w-full">
+      <div className="relative w-full" style={{ height: "clamp(380px, 45vw, 560px)" }}>
 
         {/* Görsel */}
         <motion.img
           src="/coffee-beans.jpg"
           alt="Specialty kahve çekirdekleri"
-          className="w-full"
-          style={{ display: "block", objectFit: "cover" }}
+          className="w-full h-full"
+          style={{ display: "block", objectFit: "cover", objectPosition: "center center" }}
           initial={{ opacity: 0, scale: 1.03 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
