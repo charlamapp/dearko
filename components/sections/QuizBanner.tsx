@@ -11,19 +11,20 @@ const steps = [
 
 export default function QuizBanner() {
   return (
-    <section style={{ background: "#2C2B2B", borderBottom: "1px solid #1a1919", overflow: "hidden", position: "relative" }}>
+    <section style={{ background: "#FFFFFF", borderTop: "1px solid #EBEBEB", borderBottom: "1px solid #EBEBEB", overflow: "hidden", position: "relative" }}>
 
-      {/* Dekoratif daire */}
+      {/* Dekoratif yeşil leke — sol alt */}
       <div style={{
-        position: "absolute", right: -120, top: -120,
-        width: 480, height: 480, borderRadius: "50%",
-        border: "1px solid rgba(108,129,69,0.12)",
+        position: "absolute", left: -80, bottom: -80,
+        width: 360, height: 360, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(108,129,69,0.10) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
+      {/* Dekoratif yeşil leke — sağ üst */}
       <div style={{
         position: "absolute", right: -60, top: -60,
-        width: 320, height: 320, borderRadius: "50%",
-        border: "1px solid rgba(108,129,69,0.08)",
+        width: 280, height: 280, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(108,129,69,0.08) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 
@@ -42,13 +43,15 @@ export default function QuizBanner() {
             </p>
             <h2 style={{
               fontFamily: "var(--font-inter)", fontWeight: 900,
-              fontSize: "clamp(1.8rem, 4vw, 2.8rem)", lineHeight: 1.06,
-              letterSpacing: "-0.025em", textTransform: "uppercase",
-              color: "#FFFFFF", marginBottom: "1rem",
+              fontSize: "clamp(1.8rem, 4vw, 3rem)", lineHeight: 1.06,
+              letterSpacing: "-0.03em", textTransform: "uppercase",
+              color: "#1A1919", marginBottom: "1.25rem",
             }}>
-              Sizin için<br />doğru kahveyi<br />bulalım.
+              Sizin için<br />
+              <span style={{ color: "#6C8145" }}>doğru kahveyi</span><br />
+              bulalım.
             </h2>
-            <p style={{ fontSize: "0.9375rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, marginBottom: "2rem", maxWidth: "26rem" }}>
+            <p style={{ fontSize: "0.9375rem", color: "#5E5C5C", lineHeight: 1.75, marginBottom: "2rem", maxWidth: "26rem" }}>
               5 basit soruyla damak zevkinizi, demleme alışkanlıklarınızı ve flavor profilinizi analiz ediyoruz.
             </p>
             <Link href="/quiz"
@@ -57,7 +60,8 @@ export default function QuizBanner() {
                 padding: "0.95rem 2rem", background: "#6C8145", color: "#fff",
                 fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700,
                 letterSpacing: "0.07em", textTransform: "uppercase", textDecoration: "none",
-                transition: "background 0.2s",
+                transition: "background 0.2s, transform 0.2s",
+                boxShadow: "0 4px 16px rgba(108,129,69,0.25)",
               }}
               className="hover:bg-[#57692F]"
             >
@@ -86,18 +90,18 @@ export default function QuizBanner() {
                 style={{
                   display: "flex", alignItems: "center", gap: "1.25rem",
                   padding: "1.25rem 0",
-                  borderBottom: i < steps.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                  borderBottom: i < steps.length - 1 ? "1px solid #EBEBEB" : "none",
                 }}
               >
                 <div style={{
-                  width: 42, height: 42, background: "rgba(108,129,69,0.12)",
+                  width: 44, height: 44, background: "#6C8145",
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                 }}>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#6C8145" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.1em", color: "#fff" }}>
                     {s.num}
                   </span>
                 </div>
-                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9rem", fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 600, color: "#1A1919" }}>
                   {s.label}
                 </p>
               </motion.div>
@@ -105,10 +109,10 @@ export default function QuizBanner() {
 
             {/* Süre */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingTop: "1.5rem" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6C8145" strokeWidth="1.5" strokeLinecap="round">
                 <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
               </svg>
-              <span style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
+              <span style={{ fontSize: "0.78rem", color: "#6C8145", fontFamily: "var(--font-inter)", fontWeight: 600 }}>
                 2 dakikadan az sürer
               </span>
             </div>
