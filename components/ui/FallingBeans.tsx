@@ -12,25 +12,6 @@ type Bean = {
   rotateStart: number
   rotateEnd: number
   driftX: number
-  bgPosX: number
-  bgPosY: number
-}
-
-function RealBean({ size, bgPosX, bgPosY }: { size: number; bgPosX: number; bgPosY: number }) {
-  return (
-    <div
-      style={{
-        width: size,
-        height: Math.round(size * 1.4),
-        borderRadius: "50% 48% 52% 50% / 58% 55% 45% 42%",
-        backgroundImage: "url('/coffee-beans.jpg')",
-        backgroundSize: `${size * 14}px auto`,
-        backgroundPosition: `${bgPosX}% ${bgPosY}%`,
-        boxShadow: "0 3px 10px rgba(0,0,0,0.25)",
-        flexShrink: 0,
-      }}
-    />
-  )
 }
 
 export default function FallingBeans() {
@@ -43,15 +24,12 @@ export default function FallingBeans() {
     const generated: Bean[] = Array.from({ length: 22 }, (_, i) => ({
       id: i,
       left: 2 + Math.random() * 96,
-      size: 28 + Math.random() * 24,
+      size: 36 + Math.random() * 28,
       delay: Math.random() * 1.8,
       duration: 2.4 + Math.random() * 1.8,
       rotateStart: Math.random() * 360,
       rotateEnd: (Math.random() > 0.5 ? 1 : -1) * (200 + Math.random() * 300),
       driftX: (Math.random() - 0.5) * 100,
-      bgPosX: 5 + Math.random() * 90,
-      // Sadece çekirdeklerin yoğun olduğu üst/alt kısımları göster
-      bgPosY: Math.random() > 0.5 ? Math.random() * 28 : 72 + Math.random() * 28,
     }))
 
     setBeans(generated)
@@ -87,7 +65,14 @@ export default function FallingBeans() {
             opacity: { times: [0, 0.55, 0.82, 1], duration: bean.duration, delay: bean.delay },
           }}
         >
-          <RealBean size={bean.size} bgPosX={bean.bgPosX} bgPosY={bean.bgPosY} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/coffe-bean.png"
+            alt=""
+            width={bean.size}
+            height={bean.size}
+            style={{ display: "block", objectFit: "contain" }}
+          />
         </motion.div>
       ))}
     </div>
