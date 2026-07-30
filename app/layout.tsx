@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer"
 import { CartProvider } from "@/lib/cart"
 import TrackVisit from "@/components/TrackVisit"
 import PopupBanner from "@/components/PopupBanner"
-import FallingBeans from "@/components/ui/FallingBeans"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,8 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <CartProvider>
           <TrackVisit />
-          <FallingBeans />
-          <PopupBanner />
+<PopupBanner />
           <Header />
           <main>{children}</main>
           <Footer />
