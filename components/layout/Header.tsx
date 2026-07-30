@@ -88,26 +88,36 @@ export default function Header() {
         style={{ background: "#FFFFFF", borderBottom: "1px solid #E8E8E8" }}>
 
         {/* ── Desktop layout ── */}
-        <div className="hidden lg:flex h-full px-6 xl:px-12 items-center justify-between"
-          style={{ maxWidth: "100%" }}>
+        <div className="hidden lg:grid h-full px-6 xl:px-12"
+          style={{ gridTemplateColumns: "1fr auto 1fr", alignItems: "center", maxWidth: "100%" }}>
 
-          {/* Sol: logo + tüm nav linkleri */}
-          <div className="flex items-center gap-8 xl:gap-10">
-            {/* Logo */}
-            <Link href="/" className="flex flex-col items-center gap-1 no-underline mr-4 xl:mr-6"
-              style={{ textDecoration: "none" }}>
-              <svg width="30" height="40" viewBox="0 0 28 38" fill="none">
-                <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
-                <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
-              </svg>
-              <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.35em", color: "#1A1919", textTransform: "uppercase" }}>
-                MOLA
-              </span>
-            </Link>
+          {/* Sol nav */}
+          <nav className="flex items-center gap-6 xl:gap-8">
+            {leftLinks.map(({ href, label }) => (
+              <Link key={href} href={href} style={linkStyle(href)}
+                onMouseEnter={e => { if (pathname !== href) (e.currentTarget as HTMLElement).style.color = "#6C8145" }}
+                onMouseLeave={e => { if (pathname !== href) (e.currentTarget as HTMLElement).style.color = "#2C2B2B" }}>
+                {label}
+              </Link>
+            ))}
+          </nav>
 
-            {/* Tüm nav linkleri */}
+          {/* Merkez logo */}
+          <Link href="/" className="flex flex-col items-center gap-1 no-underline mx-8 xl:mx-14"
+            style={{ textDecoration: "none" }}>
+            <svg width="30" height="40" viewBox="0 0 28 38" fill="none">
+              <path d="M14 0C8 0 3 5 3 12C3 16 4.5 19.5 7 22L4 34C4 36 6 38 8 38H20C22 38 24 36 24 34L21 22C23.5 19.5 25 16 25 12C25 5 20 0 14 0Z" fill="#6C8145" />
+              <ellipse cx="14" cy="12" rx="6" ry="8" fill="#FFFFFF" />
+            </svg>
+            <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.35em", color: "#1A1919", textTransform: "uppercase" }}>
+              MOLA
+            </span>
+          </Link>
+
+          {/* Sağ nav + ikonlar */}
+          <div className="flex items-center justify-end gap-6 xl:gap-8">
             <nav className="flex items-center gap-6 xl:gap-8">
-              {allLinks.map(({ href, label }) => (
+              {rightLinks.map(({ href, label }) => (
                 <Link key={href} href={href} style={linkStyle(href)}
                   onMouseEnter={e => { if (pathname !== href) (e.currentTarget as HTMLElement).style.color = "#6C8145" }}
                   onMouseLeave={e => { if (pathname !== href) (e.currentTarget as HTMLElement).style.color = "#2C2B2B" }}>
@@ -115,10 +125,9 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-          </div>
 
-          {/* Sağ: sadece ikonlar */}
-          <div className="flex items-center gap-0.5">
+            {/* İkonlar */}
+            <div className="flex items-center gap-0.5 ml-2">
               <div className="relative">
                 {userEmail ? (
                   <>
@@ -166,6 +175,7 @@ export default function Header() {
                   </span>
                 )}
               </Link>
+            </div>
           </div>
         </div>
 
