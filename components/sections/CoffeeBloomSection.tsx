@@ -174,7 +174,7 @@ export default function CoffeeBloomSection() {
         }}>
           Her Gün Taze Demlenen Spesiyal Kahveniz
         </h2>
-        <Link href="/urun" className="btn-white" style={{ fontSize: "0.75rem", padding: "0.8rem 1.75rem" }}>
+        <Link href="/magazin" className="btn-white" style={{ fontSize: "0.75rem", padding: "0.8rem 1.75rem" }}>
           Kahveleri Keşfet
         </Link>
       </div>
