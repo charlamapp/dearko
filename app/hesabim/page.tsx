@@ -86,13 +86,13 @@ export default function HesabimPage() {
     setProfile((p) => ({ ...p, [k]: v }))
 
   if (loading) return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.75rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div className="w-6 h-6 border-2 border-ink border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.75rem" }}>
 
       <section className="pt-14 pb-0" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

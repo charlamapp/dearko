@@ -141,7 +141,7 @@
 
   /* Hero section — landscape on mobile to match image aspect ratio */
   .hero-section {
-    height: calc(100svh - 6.25rem);
+    height: calc(100svh - 6.75rem);
     min-height: 480px;
     max-height: 900px;
   }

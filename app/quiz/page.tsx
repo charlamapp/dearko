@@ -382,11 +382,11 @@ export default function QuizPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAFA", paddingTop: "6.25rem" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAFA", paddingTop: "6.75rem" }}>
 
       {/* Progress bar */}
       {step < questions.length && (
-        <div style={{ position: "fixed", top: "6.25rem", left: 0, right: 0, height: 3, background: "#F0F0F0", zIndex: 40 }}>
+        <div style={{ position: "fixed", top: "6.75rem", left: 0, right: 0, height: 3, background: "#F0F0F0", zIndex: 40 }}>
           <motion.div
             style={{ height: "100%", background: "#6C8145", transformOrigin: "left" }}
             animate={{ width: `${progress}%` }}

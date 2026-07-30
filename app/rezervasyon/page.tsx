@@ -62,7 +62,7 @@ export default function Rezervasyon() {
   }
 
   if (done) return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "1.5rem", paddingTop: "6.25rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "1.5rem", paddingTop: "6.75rem" }}>
       <div style={{ width: "3rem", height: "3rem", display: "flex", alignItems: "center", justifyContent: "center", background: "#6C8145", marginBottom: "2rem" }}>
         <Check size={20} color="white" />
       </div>
@@ -74,7 +74,7 @@ export default function Rezervasyon() {
   )
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.75rem" }}>
 
       <div className="pt-14 pb-12" style={{ borderBottom: "1px solid #E8E8E8" }}>
         <div className="wrap">

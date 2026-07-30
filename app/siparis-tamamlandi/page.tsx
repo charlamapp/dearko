@@ -119,7 +119,7 @@ function Confirmation() {
 
 export default function SiparisTamamlandiPage() {
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "6.75rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Suspense fallback={
         <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div className="w-6 h-6 border-2 border-ink border-t-transparent rounded-full animate-spin" />
