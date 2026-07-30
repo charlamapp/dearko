@@ -8,6 +8,7 @@ import SubscriptionBanner from "@/components/sections/SubscriptionBanner"
 import MobileBanner from "@/components/sections/MobileBanner"
 import CorporateBanner from "@/components/sections/CorporateBanner"
 import PhilosophySection from "@/components/sections/PhilosophySection"
+import CoffeeBeansBanner from "@/components/sections/CoffeeBeansBanner"
 import Reveal from "@/components/ui/Reveal"
 
 export default function HomePage() {
@@ -19,6 +20,9 @@ export default function HomePage() {
       </Reveal>
       <Reveal>
         <FeaturedProducts />
+      </Reveal>
+      <Reveal>
+        <CoffeeBeansBanner />
       </Reveal>
       <Reveal>
         <QuizBanner />
