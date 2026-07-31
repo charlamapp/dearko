@@ -24,12 +24,14 @@ export default function WorldMap() {
         viewBox="0 0 800 500"
       >
         <Geographies geography={GEO_URL}>
-          {({ geographies }: { geographies: any[] }) =>
-            geographies.map((geo: any) => {
-              const isOrigin = !!ORIGINS[String(geo.id)]
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {({ geographies }: { geographies: unknown[] }) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (geographies as any[]).map((geo: Record<string, unknown>) => {
+              const isOrigin = !!ORIGINS[String(geo.id as string)]
               return (
                 <Geography
-                  key={geo.rsmKey}
+                  key={geo.rsmKey as string}
                   geography={geo}
                   fill={isOrigin ? "#6C8145" : "#D6D2CB"}
                   stroke="#F7F5F1"
@@ -45,7 +47,7 @@ export default function WorldMap() {
           }
         </Geographies>
 
-        {Object.entries(ORIGINS).map(([id, { flag, coords, name }]) => (
+        {Object.entries(ORIGINS).map(([id, { flag, coords }]) => (
           <Marker key={id} coordinates={coords}>
             {/* Pulse ring */}
             <circle r={7} fill="#6C8145" opacity={0.2} />
