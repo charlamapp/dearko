@@ -90,11 +90,10 @@ export default function PopupBanner() {
         transition={{ duration: 0.22 }}
       />
 
-      {/* Modal */}
+      {/* Modal — wrapper handles centering, motion handles animation */}
+      <div key="modal-wrap" className="fixed inset-0 z-[601] flex items-center justify-center pointer-events-none">
       <motion.div
-        key="modal"
-        className="fixed z-[601] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ width: "min(480px, 92vw)", willChange: "transform, opacity" }}
+        style={{ width: "min(480px, 92vw)", willChange: "transform, opacity", pointerEvents: "auto" }}
         initial={{ opacity: 0, y: 28, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 16, scale: 0.97 }}
@@ -226,6 +225,7 @@ export default function PopupBanner() {
           </div>
         </div>
       </motion.div>
+      </div>
       </>
       )}
     </AnimatePresence>
