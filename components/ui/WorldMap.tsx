@@ -24,8 +24,8 @@ export default function WorldMap() {
         viewBox="0 0 800 500"
       >
         <Geographies geography={GEO_URL}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
+          {({ geographies }: { geographies: any[] }) =>
+            geographies.map((geo: any) => {
               const isOrigin = !!ORIGINS[String(geo.id)]
               return (
                 <Geography
