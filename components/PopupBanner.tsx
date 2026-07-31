@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
 type Settings = {
@@ -71,21 +72,33 @@ export default function PopupBanner() {
     })
   }
 
-  if (!open || !s) return null
+  if (!s) return null
 
   return (
-    <>
+    <AnimatePresence>
+      {open && (
+      <>
       {/* Backdrop */}
-      <div
+      <motion.div
+        key="backdrop"
         onClick={dismiss}
         className="fixed inset-0 z-[600]"
-        style={{ background: "rgba(20,20,30,0.55)", backdropFilter: "blur(3px)" }}
+        style={{ background: "rgba(20,20,30,0.52)" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
       />
 
       {/* Modal */}
-      <div
+      <motion.div
+        key="modal"
         className="fixed z-[601] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ width: "min(480px, 92vw)", animation: "fadeUp 0.32s ease" }}
+        style={{ width: "min(480px, 92vw)", willChange: "transform, opacity" }}
+        initial={{ opacity: 0, y: 28, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.97 }}
+        transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <div style={{ background: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.18)" }}>
 
@@ -212,7 +225,9 @@ export default function PopupBanner() {
             )}
           </div>
         </div>
-      </div>
-    </>
+      </motion.div>
+      </>
+      )}
+    </AnimatePresence>
   )
 }
