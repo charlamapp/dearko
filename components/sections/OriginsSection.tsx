@@ -1,8 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { origins } from "@/lib/data"
+
+const WorldMap = dynamic(() => import("@/components/ui/WorldMap"), { ssr: false })
 
 export default function OriginsSection() {
   return (
@@ -44,35 +47,14 @@ export default function OriginsSection() {
             <Link href="/hakkimizda" className="btn-outline">Hikayemiz</Link>
           </motion.div>
 
-          {/* Sağ: atmosferik görsel */}
+          {/* Sağ: dünya haritası */}
           <motion.div
-            className="relative"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.1 }}
           >
-            <div className="aspect-[4/5] overflow-hidden" style={{ background: "#F5F5F5" }}>
-              <motion.img
-                src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=900&q=85"
-                alt="Kahve çiftçisi"
-                className="w-full h-full object-cover"
-                whileHover={{ scale: 1.04 }}
-                transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }}
-              />
-            </div>
-            {/* Floating stat */}
-            <motion.div
-              className="absolute -bottom-4 -left-4 lg:-left-8 p-5"
-              style={{ background: "#6C8145", minWidth: "140px" }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <p style={{ fontFamily: "var(--font-inter)", fontWeight: 900, fontSize: "2rem", color: "#fff", lineHeight: 1, marginBottom: "0.2rem" }}>12</p>
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>Ülkeden Origin</p>
-            </motion.div>
+            <WorldMap />
           </motion.div>
 
         </div>
