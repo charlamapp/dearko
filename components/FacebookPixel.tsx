@@ -4,6 +4,13 @@ import Script from "next/script"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
 
+declare global {
+  interface Window {
+    fbq: (action: string, event: string, params?: Record<string, unknown>) => void
+    _fbq: unknown
+  }
+}
+
 const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID
 
 function PixelPageView() {
@@ -11,8 +18,8 @@ function PixelPageView() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (!PIXEL_ID || typeof window === "undefined" || !(window as any).fbq) return
-    ;(window as any).fbq("track", "PageView")
+    if (!PIXEL_ID || typeof window === "undefined" || !window.fbq) return
+    window.fbq("track", "PageView")
   }, [pathname, searchParams])
 
   return null
@@ -41,16 +48,9 @@ export default function FacebookPixel() {
           `,
         }}
       />
-      {/* Noscript fallback */}
-      <noscript>
-        <img
-          height="1"
-          width="1"
-          style={{ display: "none" }}
-          src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
-          alt=""
-        />
-      </noscript>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <noscript><img height="1" width="1" style={{ display: "none" }}
+        src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`} alt="" /></noscript>
       <Suspense fallback={null}>
         <PixelPageView />
       </Suspense>
@@ -58,26 +58,21 @@ export default function FacebookPixel() {
   )
 }
 
-// Dışarıdan çağrılabilecek event fonksiyonları
 export const fbEvent = {
   addToCart: (value: number, currency = "TRY") => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      ;(window as any).fbq("track", "AddToCart", { value, currency })
-    }
+    if (typeof window !== "undefined" && window.fbq)
+      window.fbq("track", "AddToCart", { value, currency })
   },
   purchase: (value: number, currency = "TRY") => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      ;(window as any).fbq("track", "Purchase", { value, currency })
-    }
+    if (typeof window !== "undefined" && window.fbq)
+      window.fbq("track", "Purchase", { value, currency })
   },
   viewContent: (contentName: string) => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      ;(window as any).fbq("track", "ViewContent", { content_name: contentName })
-    }
+    if (typeof window !== "undefined" && window.fbq)
+      window.fbq("track", "ViewContent", { content_name: contentName })
   },
   initiateCheckout: () => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      ;(window as any).fbq("track", "InitiateCheckout")
-    }
+    if (typeof window !== "undefined" && window.fbq)
+      window.fbq("track", "InitiateCheckout")
   },
 }
