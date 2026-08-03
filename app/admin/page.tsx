@@ -749,7 +749,7 @@ function ProductsSection({ onToast }: { onToast: (m: string) => void }) {
       if (error || !url) throw new Error(error || "upload failed")
       setForm((f) => ({ ...f, image: url }))
     } catch (e) {
-      console.error("Upload hatası:", e)
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally {
       setUploading(false)
     }
@@ -1006,8 +1006,7 @@ function HeroSection({ onToast }: { onToast: (m: string) => void }) {
       if (error || !url) throw new Error(error || "upload failed")
       updateSlide(activeIdx, "image", url)
     } catch (e) {
-      console.error("Upload hatası:", e)
-      onToast("Görsel yüklenemedi — lütfen tekrar deneyin")
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally {
       setUploading(false)
     }
