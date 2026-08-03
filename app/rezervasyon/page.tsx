@@ -62,8 +62,7 @@ function CalendarPicker({ value, onChange }: { value: string; onChange: (d: stri
           const date = new Date(view.year, view.month, day)
           const dateStr = date.toISOString().split("T")[0]
           const isPast = date < today
-          const isSunday = date.getDay() === 0
-          const isDisabled = isPast || isSunday
+          const isDisabled = isPast
           const isSelected = value === dateStr
           const isToday = date.getTime() === today.getTime()
           return (
@@ -76,7 +75,6 @@ function CalendarPicker({ value, onChange }: { value: string; onChange: (d: stri
               color: isSelected ? "#fff" : isDisabled ? "#D0CEC8" : "#2C2B2B",
               cursor: isDisabled ? "not-allowed" : "pointer",
               borderRadius: 0,
-              textDecoration: isSunday && !isPast ? "line-through" : "none",
             }}>
               {day}
             </button>
@@ -92,7 +90,6 @@ function CalendarPicker({ value, onChange }: { value: string; onChange: (d: stri
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "#6B6868" }}>
           <div style={{ width: 10, height: 10, border: "1px solid #2C2B2B" }} /> Bugün
         </div>
-        <div style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "#D0CEC8" }}>Paz — kapalı</div>
       </div>
     </div>
   )
