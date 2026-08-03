@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
-  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift,
+  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift, TrendingUp, Palette,
 } from "lucide-react"
+import type { SiteTheme } from "@/components/ThemeInjector"
+import { DEFAULT_THEME } from "@/components/ThemeInjector"
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Product = {
@@ -33,6 +35,8 @@ const emptyProduct: Omit<Product, "id"> = {
 
 const sidebarItems = [
   { id: "analitik",      label: "Analitik",       icon: BarChart2 },
+  { id: "satisraporu",   label: "Satış Raporu",   icon: TrendingUp },
+  { id: "tema",          label: "Tema",            icon: Palette },
   { id: "promosyon",     label: "Promosyon",      icon: Gift },
   { id: "products",      label: "Ürünler",        icon: Coffee },
   { id: "siparisler",    label: "Siparişler",     icon: ShoppingBag },
@@ -212,6 +216,8 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       {/* Main */}
       <main style={{ flex: 1, minWidth: 0, padding: "2.5rem 2rem 4rem" }}>
         {section === "analitik"       && <AnalitikSection      onToast={showToast} />}
+        {section === "satisraporu"    && <SatisRaporuSection   onToast={showToast} />}
+        {section === "tema"           && <TemaSection          onToast={showToast} />}
         {section === "promosyon"      && <PromosyonSection     onToast={showToast} />}
         {section === "products"       && <ProductsSection      onToast={showToast} />}
         {section === "siparisler"    && <SiparislerSection    onToast={showToast} />}
@@ -465,6 +471,284 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
       onTouchMove={(e)  => { e.preventDefault(); moveDrag(e.touches[0].clientX,  e.touches[0].clientY) }}
       onTouchEnd={endDrag}
     />
+  )
+}
+
+// ── SatisRaporuSection ─────────────────────────────────────────────────────────
+
+type SalesData = {
+  today:     { revenue: number; orders: number; grossProfit: number }
+  yesterday: { revenue: number; orders: number }
+  week:      { revenue: number; orders: number; grossProfit: number }
+  month:     { revenue: number; orders: number; grossProfit: number }
+  daily:     { date: string; revenue: number; orders: number }[]
+  topProducts: { name: string; revenue: number; qty: number }[]
+  margin: number
+}
+
+function fmt(n: number) { return n.toLocaleString("tr-TR") }
+function pct(a: number, b: number) {
+  if (b === 0) return a > 0 ? "+∞" : "—"
+  const d = ((a - b) / b) * 100
+  return (d >= 0 ? "+" : "") + d.toFixed(1) + "%"
+}
+
+function SatisRaporuSection({ onToast: _ }: { onToast: (m: string) => void }) {
+  const [data, setData]       = useState<SalesData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch("/api/admin/sales").then(r => r.json()).then(d => { setData(d); setLoading(false) }).catch(() => setLoading(false))
+  }, [])
+
+  const maxRev = data ? Math.max(...data.daily.map(d => d.revenue), 1) : 1
+
+  return (
+    <div>
+      <div className="flex items-end justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
+        <div>
+          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "1.4rem", fontWeight: 800, textTransform: "uppercase", color: "#2C2B2B" }}>Satış Raporu</h1>
+          <p style={{ fontSize: "0.8125rem", color: "#6B6868", marginTop: "0.35rem" }}>Ciro ve brüt kar — %{data ? Math.round(data.margin * 100) : 42} brüt marj ile hesaplanmıştır.</p>
+        </div>
+      </div>
+
+      {/* Stat cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.875rem", marginBottom: "2rem" }}>
+        {[
+          {
+            label: "Bugün Ciro",
+            value: loading ? "—" : `₺${fmt(data?.today.revenue ?? 0)}`,
+            sub: loading ? "" : `Dün: ₺${fmt(data?.yesterday.revenue ?? 0)}`,
+            badge: loading ? "" : pct(data?.today.revenue ?? 0, data?.yesterday.revenue ?? 0),
+            badgeUp: (data?.today.revenue ?? 0) >= (data?.yesterday.revenue ?? 0),
+            accent: true,
+          },
+          {
+            label: "Bugün Brüt Kar",
+            value: loading ? "—" : `₺${fmt(data?.today.grossProfit ?? 0)}`,
+            sub: `${loading ? "—" : data?.today.orders ?? 0} sipariş`,
+            badge: "", badgeUp: true, accent: false,
+          },
+          {
+            label: "Bu Hafta Ciro",
+            value: loading ? "—" : `₺${fmt(data?.week.revenue ?? 0)}`,
+            sub: `${loading ? "—" : data?.week.orders ?? 0} sipariş`,
+            badge: "", badgeUp: true, accent: false,
+          },
+          {
+            label: "Bu Ay Ciro",
+            value: loading ? "—" : `₺${fmt(data?.month.revenue ?? 0)}`,
+            sub: `Brüt Kar: ₺${loading ? "—" : fmt(data?.month.grossProfit ?? 0)}`,
+            badge: "", badgeUp: true, accent: false,
+          },
+          {
+            label: "Bu Ay Sipariş",
+            value: loading ? "—" : String(data?.month.orders ?? 0),
+            sub: loading || !data?.month.orders ? "" : `Ort. ₺${fmt(Math.round((data.month.revenue) / data.month.orders))}`,
+            badge: "", badgeUp: true, accent: false,
+          },
+        ].map(({ label, value, sub, badge, badgeUp, accent }) => (
+          <div key={label} style={{ border: `1px solid ${accent ? "#6C8145" : "#E8E8E8"}`, padding: "1.1rem 1.25rem", background: accent ? "#F5F9EE" : "#FAFAFA" }}>
+            <p className="label mb-2">{label}</p>
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "1.6rem", fontWeight: 900, color: "#2C2B2B", lineHeight: 1 }}>{value}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.4rem" }}>
+              {sub && <p style={{ fontSize: "0.72rem", color: "#8A8A8A" }}>{sub}</p>}
+              {badge && <span style={{ fontSize: "0.68rem", fontWeight: 700, color: badgeUp ? "#1A7A3F" : "#e53e3e", background: badgeUp ? "#DCFCE7" : "#FEE2E2", padding: "0 5px", borderRadius: 2 }}>{badge}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 14-day bar chart */}
+      <p className="label mb-4">Son 14 Gün — Günlük Ciro (₺)</p>
+      {loading ? (
+        <div style={{ height: 140, background: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className="w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div style={{ border: "1px solid #E8E8E8", padding: "1.25rem", background: "#FAFAFA" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "4px", height: 120 }}>
+            {(data?.daily ?? []).map(({ date, revenue }) => {
+              const h = maxRev > 0 ? Math.max(4, Math.round((revenue / maxRev) * 112)) : 4
+              const d = new Date(date)
+              const label = d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" })
+              const isToday = date === new Date().toISOString().split("T")[0]
+              return (
+                <div key={date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }} title={`${label}: ₺${fmt(revenue)}`}>
+                  <div style={{ width: "100%", height: h, background: isToday ? "#6C8145" : "#D6E4BE", transition: "height 0.4s ease" }} />
+                  {(d.getDate() === 1 || d.getDay() === 1) && (
+                    <span style={{ fontSize: "0.55rem", color: "#8A8A8A", fontFamily: "var(--font-inter)", whiteSpace: "nowrap" }}>
+                      {d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.7rem", color: "#6B6868" }}>
+              <div style={{ width: 10, height: 10, background: "#6C8145" }} /> Bugün
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.7rem", color: "#6B6868" }}>
+              <div style={{ width: 10, height: 10, background: "#D6E4BE" }} /> Geçmiş günler
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top products */}
+      {(data?.topProducts?.length ?? 0) > 0 && (
+        <div style={{ marginTop: "2rem" }}>
+          <p className="label mb-4">En Çok Satan Ürünler (Son 90 Gün)</p>
+          <div style={{ border: "1px solid #E8E8E8" }}>
+            {data!.topProducts.map((p, i) => {
+              const pctOfTop = Math.round((p.revenue / data!.topProducts[0].revenue) * 100)
+              return (
+                <div key={p.name} style={{ padding: "0.875rem 1.1rem", borderBottom: i < data!.topProducts.length - 1 ? "1px solid #F5F5F5" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.4rem" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.65rem", fontWeight: 700, color: "#A0A0A0", width: 14 }}>{i + 1}</span>
+                    <span style={{ flex: 1, fontSize: "0.8125rem", color: "#2C2B2B" }}>{p.name}</span>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8rem", fontWeight: 700, color: "#6C8145" }}>₺{fmt(Math.round(p.revenue))}</span>
+                    <span style={{ fontSize: "0.72rem", color: "#8A8A8A" }}>{p.qty} adet</span>
+                  </div>
+                  <div style={{ marginLeft: 22, height: 2.5, background: "#EEF0F2", borderRadius: 2 }}>
+                    <div style={{ height: "100%", width: `${pctOfTop}%`, background: "#6C8145", borderRadius: 2, transition: "width 0.6s ease" }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {!loading && (data?.month.orders ?? 0) === 0 && (
+        <div style={{ marginTop: "3rem", padding: "2.5rem", border: "1px dashed #E8E8E8", textAlign: "center" }}>
+          <p style={{ fontSize: "0.875rem", color: "#8A8A8A" }}>Henüz tamamlanmış sipariş yok. Siparişler geldikçe burada görünecek.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── TemaSection ────────────────────────────────────────────────────────────────
+
+const TEMA_FIELDS: { key: keyof SiteTheme; label: string; desc: string }[] = [
+  { key: "brandColor",    label: "Marka Rengi",           desc: "Butonlar, etiketler, vurgu öğeleri" },
+  { key: "brandDark",     label: "Marka Koyu Ton",        desc: "Hover durumları ve degrade geçişler" },
+  { key: "bgPage",        label: "Sayfa Arka Planı",      desc: "Genel sayfa arka plan rengi" },
+  { key: "bgSection",     label: "Section Arka Planı",    desc: "Gri/bej section arkaplanları" },
+  { key: "textPrimary",   label: "Ana Yazı Rengi",        desc: "Başlıklar ve gövde metni" },
+  { key: "textSecondary", label: "İkincil Yazı Rengi",    desc: "Alt başlıklar ve yardımcı metin" },
+]
+
+function TemaSection({ onToast }: { onToast: (m: string) => void }) {
+  const [theme, setTheme]   = useState<SiteTheme>(DEFAULT_THEME)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving]   = useState(false)
+
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      if (c?.theme) setTheme({ ...DEFAULT_THEME, ...c.theme })
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  function setColor(key: keyof SiteTheme, value: string) {
+    setTheme(t => ({ ...t, [key]: value }))
+  }
+
+  async function save() {
+    setSaving(true)
+    const res = await fetch("/api/content", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: "theme", data: theme }),
+    })
+    setSaving(false)
+    onToast(res.ok ? "Tema kaydedildi ✓ — sayfa yenilenmeli" : "Kayıt başarısız ✗")
+  }
+
+  async function reset() {
+    setTheme(DEFAULT_THEME)
+    setSaving(true)
+    await fetch("/api/content", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: "theme", data: DEFAULT_THEME }),
+    })
+    setSaving(false)
+    onToast("Tema sıfırlandı ✓")
+  }
+
+  if (loading) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
+
+  return (
+    <div>
+      <div className="flex items-end justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
+        <div>
+          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "1.4rem", fontWeight: 800, textTransform: "uppercase", color: "#2C2B2B" }}>Tema</h1>
+          <p style={{ fontSize: "0.8125rem", color: "#6B6868", marginTop: "0.35rem" }}>Sitenin renk paletini özelleştirin. Değişiklikler kaydettikten sonra aktif olur.</p>
+        </div>
+        <button onClick={reset} style={{ fontSize: "0.75rem", color: "#6B6868", background: "transparent", border: "1px solid #E8E8E8", padding: "0.45rem 0.9rem", cursor: "pointer", fontFamily: "var(--font-inter)" }}>
+          Varsayılana Sıfırla
+        </button>
+      </div>
+
+      {/* Preview bar */}
+      <div style={{ marginBottom: "2rem", border: "1px solid #E8E8E8", borderRadius: 0 }}>
+        <div style={{ background: theme.bgPage, padding: "1.25rem 1.5rem", borderBottom: "1px solid #E8E8E8" }}>
+          <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: theme.brandColor, textTransform: "uppercase", marginBottom: "0.4rem" }}>Önizleme</p>
+          <p style={{ fontSize: "1.1rem", fontWeight: 900, color: theme.textPrimary, textTransform: "uppercase", letterSpacing: "-0.02em" }}>Mola Coffee</p>
+          <p style={{ fontSize: "0.8rem", color: theme.textSecondary, marginTop: "0.25rem" }}>Specialty kahve, sipariş sonrası kavrum.</p>
+        </div>
+        <div style={{ background: theme.bgSection, padding: "0.875rem 1.5rem", display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          <div style={{ background: theme.brandColor, color: "#fff", fontSize: "0.72rem", fontWeight: 700, padding: "0.5rem 1rem", letterSpacing: "0.06em" }}>SATIN AL</div>
+          <div style={{ border: `1.5px solid ${theme.textPrimary}`, color: theme.textPrimary, fontSize: "0.72rem", fontWeight: 700, padding: "0.5rem 1rem", letterSpacing: "0.06em" }}>İNCELE</div>
+        </div>
+      </div>
+
+      {/* Color pickers */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+        {TEMA_FIELDS.map(({ key, label, desc }) => (
+          <div key={key} style={{ border: "1px solid #E8E8E8", padding: "1rem 1.1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.6rem" }}>
+              <div>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: 600, color: "#2C2B2B" }}>{label}</p>
+                <p style={{ fontSize: "0.7rem", color: "#8A8A8A", marginTop: "0.15rem" }}>{desc}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", color: "#8A8A8A" }}>{theme[key]}</span>
+                <div style={{ width: 32, height: 32, background: theme[key], border: "1px solid #E8E8E8", position: "relative", cursor: "pointer", flexShrink: 0 }}>
+                  <input
+                    type="color"
+                    value={theme[key]}
+                    onChange={e => setColor(key, e.target.value)}
+                    style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
+                  />
+                </div>
+              </div>
+            </div>
+            {/* Hex input */}
+            <input
+              type="text"
+              value={theme[key]}
+              onChange={e => { if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) setColor(key, e.target.value) }}
+              style={{ width: "100%", fontFamily: "var(--font-inter)", fontSize: "0.8rem", border: "1px solid #E8E8E8", padding: "0.4rem 0.6rem", color: "#2C2B2B", background: "#FAFAFA" }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", gap: "0.75rem" }}>
+        <SaveBtn saving={saving} onClick={save} />
+      </div>
+
+      <div style={{ marginTop: "1.5rem", padding: "0.875rem 1.1rem", background: "#FFF8E7", border: "1px solid #F5D96A" }}>
+        <p style={{ fontSize: "0.78rem", color: "#92660A" }}>
+          <strong>Not:</strong> Tema değişiklikleri sadece CSS sınıfları kullanan öğeleri etkiler (butonlar, etiketler, form odaklanmaları). Bölüm arka planları için ilgili section&apos;ı düzenleyin.
+        </p>
+      </div>
+    </div>
   )
 }
 

@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --brand: #6C8145;
+  --brand-dark: #57692F;
+  --bg-page: #FFFFFF;
+  --bg-section: #F8F6F3;
+  --text-primary: #2C2B2B;
+  --text-secondary: #6B6868;
+}
+
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -66,7 +75,7 @@
   }
 
   /* Eyebrow labels */
-  .label       { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #6C8145; }
+  .label       { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand); }
   .label-ink   { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #2C2B2B; }
   .label-muted { font-family: var(--font-inter), sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #7A7878; }
 
@@ -86,8 +95,8 @@
   }
   .btn-dark          { @apply btn; background: #2C2B2B; color: #fff; }
   .btn-dark:hover    { background: #1a1919; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
-  .btn-blue          { @apply btn; background: #6C8145; color: #fff; }
-  .btn-blue:hover    { background: #57692F; box-shadow: 0 4px 16px rgba(108,129,69,0.32); }
+  .btn-blue          { @apply btn; background: var(--brand); color: #fff; }
+  .btn-blue:hover    { background: var(--brand-dark); box-shadow: 0 4px 16px rgba(108,129,69,0.32); }
   .btn-outline       { @apply btn; background: transparent; color: #2C2B2B; border: 1.5px solid #2C2B2B; }
   .btn-outline:hover { background: #2C2B2B; color: #fff; }
   .btn-white         { @apply btn; background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.8); }
@@ -100,7 +109,7 @@
     color: #2C2B2B; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     -webkit-appearance: none; appearance: none;
   }
-  .input:focus { border-color: #6C8145; box-shadow: 0 0 0 3px rgba(108,129,69,0.12); }
+  .input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(108,129,69,0.12); }
   .input::placeholder { color: #B0B0B0; }
 
   .select {
@@ -109,7 +118,7 @@
     font-size: 1rem; color: #2C2B2B; outline: none; -webkit-appearance: none; appearance: none;
     cursor: pointer; transition: border-color 0.2s;
   }
-  .select:focus { border-color: #6C8145; }
+  .select:focus { border-color: var(--brand); }
 
   /* Nav */
   .nav-link        { font-family: var(--font-inter), sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.01em; color: #2C2B2B; text-decoration: none; padding: 0.3rem 0.55rem; }

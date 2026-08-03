@@ -7,6 +7,7 @@ import { CartProvider } from "@/lib/cart"
 import TrackVisit from "@/components/TrackVisit"
 import PopupBanner from "@/components/PopupBanner"
 import FacebookPixel from "@/components/FacebookPixel"
+import ThemeInjector from "@/components/ThemeInjector"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <ThemeInjector />
       </head>
       <body className="antialiased">
         <CartProvider>
