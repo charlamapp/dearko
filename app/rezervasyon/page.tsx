@@ -2,24 +2,100 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Check, ChevronRight } from "lucide-react"
+import { Check, ChevronRight, ChevronLeft } from "lucide-react"
 import { timeSlots, vehicleServices } from "@/lib/data"
 
 const steps = ["Tarih & Saat", "Hizmet", "Detaylar", "İletişim", "Özet"]
 
-function getDays() {
-  const days = []
-  const today = new Date()
-  for (let i = 1; i <= 21; i++) {
-    const d = new Date(today)
-    d.setDate(today.getDate() + i)
-    days.push({
-      dateStr: d.toISOString().split("T")[0],
-      label: d.toLocaleDateString("tr-TR", { weekday: "short", day: "numeric", month: "short" }),
-      disabled: d.getDay() === 0,
-    })
-  }
-  return days
+const TR_MONTHS = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
+const TR_DAYS_SHORT = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"]
+
+function CalendarPicker({ value, onChange }: { value: string; onChange: (d: string) => void }) {
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() })
+
+  const firstDay = new Date(view.year, view.month, 1)
+  const startOffset = (firstDay.getDay() + 6) % 7 // Mon=0 … Sun=6
+  const daysInMonth = new Date(view.year, view.month + 1, 0).getDate()
+  const cells: (number | null)[] = [...Array(startOffset).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
+  while (cells.length % 7 !== 0) cells.push(null)
+
+  const canPrev = view.year > today.getFullYear() || (view.year === today.getFullYear() && view.month > today.getMonth())
+  const prev = () => setView(v => v.month === 0 ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 })
+  const next = () => setView(v => v.month === 11 ? { year: v.year + 1, month: 0 } : { ...v, month: v.month + 1 })
+
+  return (
+    <div style={{ maxWidth: "380px" }}>
+      {/* Month navigation */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+        <button onClick={prev} disabled={!canPrev} style={{
+          width: "2.25rem", height: "2.25rem", display: "flex", alignItems: "center", justifyContent: "center",
+          border: "1px solid #E8E8E8", background: "transparent", cursor: canPrev ? "pointer" : "not-allowed",
+          color: canPrev ? "#2C2B2B" : "#D0CEC8",
+        }}>
+          <ChevronLeft size={15} />
+        </button>
+        <span style={{ fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.9rem", color: "#2C2B2B", letterSpacing: "0.04em" }}>
+          {TR_MONTHS[view.month]} {view.year}
+        </span>
+        <button onClick={next} style={{
+          width: "2.25rem", height: "2.25rem", display: "flex", alignItems: "center", justifyContent: "center",
+          border: "1px solid #E8E8E8", background: "transparent", cursor: "pointer", color: "#2C2B2B",
+        }}>
+          <ChevronRight size={15} />
+        </button>
+      </div>
+
+      {/* Weekday headers */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px", marginBottom: "4px" }}>
+        {TR_DAYS_SHORT.map((d) => (
+          <div key={d} style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", fontWeight: 600, color: "#6B6868", textAlign: "center", padding: "0.25rem 0", letterSpacing: "0.05em" }}>
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+        {cells.map((day, i) => {
+          if (!day) return <div key={i} />
+          const date = new Date(view.year, view.month, day)
+          const dateStr = date.toISOString().split("T")[0]
+          const isPast = date < today
+          const isSunday = date.getDay() === 0
+          const isDisabled = isPast || isSunday
+          const isSelected = value === dateStr
+          const isToday = date.getTime() === today.getTime()
+          return (
+            <button key={i} disabled={isDisabled} onClick={() => onChange(dateStr)} style={{
+              aspectRatio: "1", display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "var(--font-inter)", fontSize: "0.8125rem", fontWeight: isSelected ? 700 : 400,
+              border: "1px solid",
+              borderColor: isSelected ? "#6C8145" : isToday ? "#2C2B2B" : "transparent",
+              background: isSelected ? "#6C8145" : "transparent",
+              color: isSelected ? "#fff" : isDisabled ? "#D0CEC8" : "#2C2B2B",
+              cursor: isDisabled ? "not-allowed" : "pointer",
+              borderRadius: 0,
+              textDecoration: isSunday && !isPast ? "line-through" : "none",
+            }}>
+              {day}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: "flex", gap: "1.25rem", marginTop: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "#6B6868" }}>
+          <div style={{ width: 10, height: 10, background: "#6C8145" }} /> Seçili
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "#6B6868" }}>
+          <div style={{ width: 10, height: 10, border: "1px solid #2C2B2B" }} /> Bugün
+        </div>
+        <div style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "#D0CEC8" }}>Paz — kapalı</div>
+      </div>
+    </div>
+  )
 }
 
 export default function Rezervasyon() {
@@ -125,26 +201,7 @@ export default function Rezervasyon() {
               <div className="space-y-10">
                 <div>
                   <p className="label-ink mb-5">Tarih</p>
-                  <div className="flex gap-2 overflow-x-auto pb-2">
-                    {getDays().map(({ dateStr, label, disabled }) => (
-                      <button
-                        key={dateStr}
-                        disabled={disabled}
-                        onClick={() => set("date", dateStr)}
-                        style={{
-                          flexShrink: 0, padding: "0.5rem 0.75rem",
-                          fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 500,
-                          border: "1px solid", borderRadius: 0,
-                          borderColor: form.date === dateStr ? "#6C8145" : "#E8E8E8",
-                          background: form.date === dateStr ? "#6C8145" : "transparent",
-                          color: form.date === dateStr ? "#fff" : disabled ? "#E8E8E8" : "#6B6868",
-                          opacity: disabled ? 0.4 : 1, cursor: disabled ? "not-allowed" : "pointer",
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
+                  <CalendarPicker value={form.date} onChange={(d) => set("date", d)} />
                 </div>
                 <div>
                   <p className="label-ink mb-5">Başlangıç Saati</p>
