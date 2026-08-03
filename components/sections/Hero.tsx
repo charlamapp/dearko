@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import defaultContent from "@/data/content.json"
 
 type Slide = { id: string; image: string; position?: string; headline: string; sub: string; cta: string; href: string }
 
@@ -34,12 +35,15 @@ function SteamParticles() {
 }
 
 export default function Hero() {
-  const [slides, setSlides] = useState<Slide[]>([])
+  const [slides, setSlides] = useState<Slide[]>(defaultContent.hero as Slide[])
   const [cur, setCur] = useState(0)
   const [paused, setPaused] = useState(false)
 
+  // Supabase'de admin güncellemesi varsa uygula
   useEffect(() => {
-    fetch("/api/content").then((r) => r.json()).then((c) => setSlides(c.hero))
+    fetch("/api/content").then((r) => r.json()).then((c) => {
+      if (c?.hero?.length) setSlides(c.hero)
+    }).catch(() => {})
   }, [])
 
   const next = useCallback(() => setCur((c) => (c + 1) % slides.length), [slides.length])
@@ -51,9 +55,7 @@ export default function Hero() {
     return () => clearInterval(t)
   }, [next, paused, slides.length])
 
-  if (!slides.length) return (
-    <div className="hero-section" style={{ background: "#F0F0F0" }} />
-  )
+  if (!slides.length) return <div className="hero-section" style={{ background: "#1A1919" }} />
 
   const s = slides[cur]
 
@@ -84,6 +86,8 @@ export default function Hero() {
             alt=""
             className="absolute inset-0 w-full h-full"
             style={{ objectFit: "cover", objectPosition: slide.position ?? "center center" }}
+            fetchPriority={i === 0 ? "high" : "low"}
+            loading={i === 0 ? "eager" : "lazy"}
           />
         </div>
       ))}
