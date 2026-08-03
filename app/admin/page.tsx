@@ -53,6 +53,44 @@ type Customer = {
   notes: string | null; created_at: string; order_count: number; total_spent: number
 }
 
+// ─── Image compression helper (keeps uploads under Vercel's 4.5 MB limit) ────
+
+async function compressImage(file: File, maxPx = 1920, quality = 0.85): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      let { width, height } = img
+      if (width > maxPx || height > maxPx) {
+        if (width >= height) { height = Math.round(height * maxPx / width); width = maxPx }
+        else { width = Math.round(width * maxPx / height); height = maxPx }
+      }
+      const canvas = document.createElement("canvas")
+      canvas.width = width; canvas.height = height
+      canvas.getContext("2d")!.drawImage(img, 0, 0, width, height)
+      URL.revokeObjectURL(url)
+      canvas.toBlob(
+        (blob) => resolve(blob
+          ? new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" })
+          : file),
+        "image/jpeg", quality,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file) }
+    img.src = url
+  })
+}
+
+async function uploadFile(file: File): Promise<string> {
+  const compressed = await compressImage(file)
+  const fd = new FormData(); fd.append("file", compressed)
+  const res = await fetch("/api/upload", { method: "POST", body: fd })
+  if (!res.ok) throw new Error(`Sunucu hatası: ${res.status}`)
+  const { url, error } = await res.json()
+  if (error || !url) throw new Error(error || "upload başarısız")
+  return url
+}
+
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -743,10 +781,7 @@ function ProductsSection({ onToast }: { onToast: (m: string) => void }) {
   async function handleUpload(file: File) {
     setUploading(true)
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const res = await fetch("/api/upload", { method: "POST", body: fd })
-      const { url, error } = await res.json()
-      if (error || !url) throw new Error(error || "upload failed")
+      const url = await uploadFile(file)
       setForm((f) => ({ ...f, image: url }))
     } catch (e) {
       alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
@@ -1000,10 +1035,7 @@ function HeroSection({ onToast }: { onToast: (m: string) => void }) {
   async function uploadImg(file: File) {
     setUploading(true)
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const res = await fetch("/api/upload", { method: "POST", body: fd })
-      const { url, error } = await res.json()
-      if (error || !url) throw new Error(error || "upload failed")
+      const url = await uploadFile(file)
       updateSlide(activeIdx, "image", url)
     } catch (e) {
       alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
@@ -1125,9 +1157,10 @@ function HakkimizdaSection({ onToast }: { onToast: (m: string) => void }) {
   async function uploadImg(file: File) {
     setUploading(true)
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-      if (url) setData((d) => d ? { ...d, storyImage: url } : d)
+      const url = await uploadFile(file)
+      setData((d) => d ? { ...d, storyImage: url } : d)
+    } catch (e) {
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally { setUploading(false) }
   }
 
@@ -1306,9 +1339,10 @@ function KurumsalSection({ onToast }: { onToast: (m: string) => void }) {
   async function uploadImg(file: File) {
     setUploading(true)
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-      if (url) setData((d) => d ? { ...d, heroImage: url } : d)
+      const url = await uploadFile(file)
+      setData((d) => d ? { ...d, heroImage: url } : d)
+    } catch (e) {
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally { setUploading(false) }
   }
 
@@ -1393,18 +1427,20 @@ function MobilAracSection({ onToast }: { onToast: (m: string) => void }) {
   async function uploadHero(file: File) {
     setUploading("hero")
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-      if (url) setData((d) => d ? { ...d, heroImage: url } : d)
+      const url = await uploadFile(file)
+      setData((d) => d ? { ...d, heroImage: url } : d)
+    } catch (e) {
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally { setUploading(null) }
   }
 
   async function uploadGallery(file: File) {
     setUploading(-1)
     try {
-      const fd = new FormData(); fd.append("file", file)
-      const { url } = await (await fetch("/api/upload", { method: "POST", body: fd })).json()
-      if (url) setData((d) => d ? { ...d, gallery: [...d.gallery, url] } : d)
+      const url = await uploadFile(file)
+      setData((d) => d ? { ...d, gallery: [...d.gallery, url] } : d)
+    } catch (e) {
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
     } finally { setUploading(null) }
   }
 
