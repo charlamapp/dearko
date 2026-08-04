@@ -172,7 +172,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(""), 2500) }
 
   return (
-    <div style={{ background: "#FFFFFF", minHeight: "100vh", paddingTop: "4rem", display: "flex" }}>
+    <div style={{ background: "#FFFFFF", minHeight: "100vh", display: "flex" }}>
 
       {/* Toast */}
       {toast && (
@@ -183,7 +183,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       )}
 
       {/* Sidebar */}
-      <aside style={{ width: "220px", flexShrink: 0, background: "#F5F5F5", borderRight: "1px solid #E8E8E8", position: "sticky", top: "4rem", height: "calc(100vh - 4rem)", overflowY: "auto" }}>
+      <aside style={{ width: "220px", flexShrink: 0, background: "#F5F5F5", borderRight: "1px solid #E8E8E8", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
         <div className="p-5">
           <p className="label mb-6" style={{ paddingTop: "0.5rem" }}>Yönetim Paneli</p>
           <nav className="space-y-1">

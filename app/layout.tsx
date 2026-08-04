@@ -1,12 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import Header from "@/components/layout/Header"
-import Footer from "@/components/layout/Footer"
-import { CartProvider } from "@/lib/cart"
-import TrackVisit from "@/components/TrackVisit"
-import PopupBanner from "@/components/PopupBanner"
-import FacebookPixel from "@/components/FacebookPixel"
+import SiteShell from "@/components/layout/SiteShell"
 import ThemeInjector from "@/components/ThemeInjector"
 
 const inter = Inter({
@@ -32,14 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeInjector />
       </head>
       <body className="antialiased">
-        <CartProvider>
-          <FacebookPixel />
-          <TrackVisit />
-<PopupBanner />
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </CartProvider>
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   )
