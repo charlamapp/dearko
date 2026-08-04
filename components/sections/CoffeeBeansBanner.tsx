@@ -2,15 +2,27 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+
+const DEFAULT_IMAGE = "/coffee-beans.jpg"
 
 export default function CoffeeBeansBanner() {
+  const [image, setImage] = useState(DEFAULT_IMAGE)
+
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      const img = c?.appearance?.coffeeBeansBanner?.image
+      if (img) setImage(img)
+    }).catch(() => {})
+  }, [])
+
   return (
     <section style={{ background: "#FFFFFF", overflow: "hidden" }}>
       <div className="relative w-full" style={{ height: "clamp(380px, 45vw, 560px)" }}>
 
         {/* Görsel */}
         <motion.img
-          src="/coffee-beans.jpg"
+          src={image}
           alt="Specialty kahve çekirdekleri"
           className="w-full h-full"
           style={{ display: "block", objectFit: "cover", objectPosition: "center center" }}

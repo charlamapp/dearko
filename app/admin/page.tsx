@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Upload, LogOut,
-  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift, TrendingUp, Palette,
+  Coffee, Package, Image as ImageIcon, Info, Phone, Building2, Truck, Users, ShoppingBag, CalendarCheck, BarChart2, Gift, TrendingUp, Palette, Layout,
 } from "lucide-react"
 import type { SiteTheme } from "@/components/ThemeInjector"
 import { DEFAULT_THEME } from "@/components/ThemeInjector"
@@ -36,6 +36,7 @@ const emptyProduct: Omit<Product, "id"> = {
 const sidebarItems = [
   { id: "analitik",      label: "Analitik",       icon: BarChart2 },
   { id: "satisraporu",   label: "Satış Raporu",   icon: TrendingUp },
+  { id: "gorunum",       label: "Görünüm",         icon: Layout },
   { id: "tema",          label: "Tema",            icon: Palette },
   { id: "promosyon",     label: "Promosyon",      icon: Gift },
   { id: "products",      label: "Ürünler",        icon: Coffee },
@@ -217,6 +218,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       <main style={{ flex: 1, minWidth: 0, padding: "2.5rem 2rem 4rem" }}>
         {section === "analitik"       && <AnalitikSection      onToast={showToast} />}
         {section === "satisraporu"    && <SatisRaporuSection   onToast={showToast} />}
+        {section === "gorunum"        && <GorünümSection       onToast={showToast} />}
         {section === "tema"           && <TemaSection          onToast={showToast} />}
         {section === "promosyon"      && <PromosyonSection     onToast={showToast} />}
         {section === "products"       && <ProductsSection      onToast={showToast} />}
@@ -471,6 +473,242 @@ function GlobeCanvas({ visitors }: { visitors: AnalyticsCountry[] }) {
       onTouchMove={(e)  => { e.preventDefault(); moveDrag(e.touches[0].clientX,  e.touches[0].clientY) }}
       onTouchEnd={endDrag}
     />
+  )
+}
+
+// ── GorünümSection ─────────────────────────────────────────────────────────────
+
+type AppearanceConfig = {
+  coffeeBeansBanner: { image: string }
+  mobileBanner:      { image: string }
+  subscriptionBanner:{ bg: string }
+  quizBanner:        { bg: string }
+}
+
+const DEFAULT_APPEARANCE: AppearanceConfig = {
+  coffeeBeansBanner:  { image: "/coffee-beans.jpg" },
+  mobileBanner:       { image: "https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=1600&q=85" },
+  subscriptionBanner: { bg: "#F5F5F5" },
+  quizBanner:         { bg: "#FFFFFF" },
+}
+
+function GorünümSection({ onToast }: { onToast: (m: string) => void }) {
+  const [app, setApp]         = useState<AppearanceConfig>(DEFAULT_APPEARANCE)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving]   = useState(false)
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      if (c?.appearance) setApp({ ...DEFAULT_APPEARANCE, ...c.appearance })
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  async function handleImageUpload(sectionKey: keyof AppearanceConfig, file: File) {
+    setUploadingKey(sectionKey)
+    try {
+      const url = await uploadFile(file)
+      setApp(a => ({ ...a, [sectionKey]: { ...(a[sectionKey] as Record<string, string>), image: url } }))
+    } catch (e) {
+      alert("Upload hatası: " + (e instanceof Error ? e.message : String(e)))
+    } finally {
+      setUploadingKey(null)
+    }
+  }
+
+  async function save() {
+    setSaving(true)
+    const res = await fetch("/api/content", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: "appearance", data: app }),
+    })
+    setSaving(false)
+    onToast(res.ok ? "Görünüm kaydedildi ✓" : "Kayıt başarısız ✗")
+  }
+
+  function resetSection(key: keyof AppearanceConfig) {
+    setApp(a => ({ ...a, [key]: DEFAULT_APPEARANCE[key] }))
+  }
+
+  if (loading) return <div className="py-20 text-center"><div className="inline-block w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" /></div>
+
+  return (
+    <div>
+      <div className="mb-8 pb-6" style={{ borderBottom: "1px solid #E8E8E8" }}>
+        <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "1.4rem", fontWeight: 800, textTransform: "uppercase", color: "#2C2B2B" }}>Görünüm</h1>
+        <p style={{ fontSize: "0.8125rem", color: "#6B6868", marginTop: "0.35rem" }}>Ana sayfadaki bölümlerin arka plan görsellerini ve renklerini değiştirin.</p>
+      </div>
+
+      <div className="space-y-8">
+
+        {/* CoffeeBeansBanner */}
+        <SectionCard
+          title="Kahve Çekirdekleri Banner"
+          subtitle="Ana sayfanın ortasındaki büyük görsel banner"
+          onReset={() => resetSection("coffeeBeansBanner")}
+        >
+          <ImageField
+            label="Arka Plan Görseli"
+            value={(app.coffeeBeansBanner as { image: string }).image}
+            uploading={uploadingKey === "coffeeBeansBanner"}
+            onUpload={f => handleImageUpload("coffeeBeansBanner", f)}
+            onUrlChange={url => setApp(a => ({ ...a, coffeeBeansBanner: { image: url } }))}
+          />
+        </SectionCard>
+
+        {/* MobileBanner */}
+        <SectionCard
+          title="Mobil Araç Banner"
+          subtitle="Mobil kahve aracı bölümünün arka plan fotoğrafı"
+          onReset={() => resetSection("mobileBanner")}
+        >
+          <ImageField
+            label="Arka Plan Görseli"
+            value={(app.mobileBanner as { image: string }).image}
+            uploading={uploadingKey === "mobileBanner"}
+            onUpload={f => handleImageUpload("mobileBanner", f)}
+            onUrlChange={url => setApp(a => ({ ...a, mobileBanner: { image: url } }))}
+          />
+        </SectionCard>
+
+        {/* SubscriptionBanner */}
+        <SectionCard
+          title="Abonelik Banner"
+          subtitle="Kahve abonelik planlarının bulunduğu bölüm"
+          onReset={() => resetSection("subscriptionBanner")}
+        >
+          <ColorField
+            label="Arka Plan Rengi"
+            value={(app.subscriptionBanner as { bg: string }).bg}
+            onChange={bg => setApp(a => ({ ...a, subscriptionBanner: { bg } }))}
+          />
+        </SectionCard>
+
+        {/* QuizBanner */}
+        <SectionCard
+          title="Kahve Testi Banner"
+          subtitle={`"Kahveni bul" quiz bölümü`}
+          onReset={() => resetSection("quizBanner")}
+        >
+          <ColorField
+            label="Arka Plan Rengi"
+            value={(app.quizBanner as { bg: string }).bg}
+            onChange={bg => setApp(a => ({ ...a, quizBanner: { bg } }))}
+          />
+        </SectionCard>
+
+      </div>
+
+      <div className="mt-8 pt-6" style={{ borderTop: "1px solid #E8E8E8" }}>
+        <SaveBtn saving={saving} onClick={save} />
+      </div>
+    </div>
+  )
+}
+
+function SectionCard({ title, subtitle, onReset, children }: {
+  title: string; subtitle: string; onReset: () => void; children: React.ReactNode
+}) {
+  return (
+    <div style={{ border: "1px solid #E8E8E8", padding: "1.25rem 1.5rem" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+        <div>
+          <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9rem", fontWeight: 700, color: "#2C2B2B" }}>{title}</p>
+          <p style={{ fontSize: "0.75rem", color: "#8A8A8A", marginTop: "0.2rem" }}>{subtitle}</p>
+        </div>
+        <button onClick={onReset} style={{ fontSize: "0.7rem", color: "#8A8A8A", background: "transparent", border: "1px solid #E8E8E8", padding: "0.35rem 0.7rem", cursor: "pointer", fontFamily: "var(--font-inter)", flexShrink: 0 }}>
+          Sıfırla
+        </button>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function ImageField({ label, value, uploading, onUpload, onUrlChange }: {
+  label: string
+  value: string
+  uploading: boolean
+  onUpload: (f: File) => void
+  onUrlChange: (url: string) => void
+}) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const isExternal = value.startsWith("http")
+
+  return (
+    <div>
+      <p className="label-ink mb-3">{label}</p>
+      <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+        {/* Preview */}
+        <div style={{ width: 120, height: 80, flexShrink: 0, border: "1px solid #E8E8E8", overflow: "hidden", position: "relative", background: "#F5F5F5" }}>
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <ImageIcon size={20} color="#D0CEC8" />
+            </div>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div style={{ flex: 1 }}>
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            style={{
+              display: "flex", alignItems: "center", gap: "0.5rem",
+              padding: "0.55rem 1rem", border: "1px solid #E8E8E8",
+              background: "#FAFAFA", cursor: "pointer", marginBottom: "0.75rem",
+              fontFamily: "var(--font-inter)", fontSize: "0.78rem", color: "#2C2B2B",
+              opacity: uploading ? 0.6 : 1,
+            }}
+          >
+            {uploading ? (
+              <><div className="w-3.5 h-3.5 border-2 border-ink border-t-transparent rounded-full animate-spin" /> Yükleniyor…</>
+            ) : (
+              <><Upload size={13} /> Görsel Yükle</>
+            )}
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = "" }} />
+          <p style={{ fontSize: "0.7rem", color: "#A0A0A0", marginBottom: "0.5rem" }}>ya da URL yapıştır</p>
+          <input
+            type="text"
+            value={value}
+            onChange={e => onUrlChange(e.target.value)}
+            placeholder="https://..."
+            className="input"
+            style={{ fontSize: "0.78rem", padding: "0.5rem 0.75rem", color: isExternal ? "#2C2B2B" : "#6B6868" }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ColorField({ label, value, onChange }: {
+  label: string; value: string; onChange: (c: string) => void
+}) {
+  return (
+    <div>
+      <p className="label-ink mb-3">{label}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ width: 40, height: 40, background: value, border: "1px solid #E8E8E8", position: "relative", flexShrink: 0, cursor: "pointer" }}>
+          <input type="color" value={value} onChange={e => onChange(e.target.value)}
+            style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }} />
+        </div>
+        <input
+          type="text"
+          value={value}
+          onChange={e => { if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) onChange(e.target.value) }}
+          style={{ width: 110, fontFamily: "var(--font-inter)", fontSize: "0.82rem", border: "1px solid #E8E8E8", padding: "0.45rem 0.65rem", color: "#2C2B2B" }}
+        />
+        <div style={{ width: 120, height: 32, background: value, border: "1px solid #E8E8E8" }} />
+      </div>
+    </div>
   )
 }
 

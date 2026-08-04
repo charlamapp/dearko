@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
 
 const steps = [
   { num: "01", label: "Demleme yönteminizi" },
@@ -10,8 +11,16 @@ const steps = [
 ]
 
 export default function QuizBanner() {
+  const [bg, setBg] = useState("#FFFFFF")
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      const v = c?.appearance?.quizBanner?.bg
+      if (v) setBg(v)
+    }).catch(() => {})
+  }, [])
+
   return (
-    <section style={{ background: "#FFFFFF", borderTop: "1px solid #EBEBEB", borderBottom: "1px solid #EBEBEB", overflow: "hidden", position: "relative" }}>
+    <section style={{ background: bg, borderTop: "1px solid #EBEBEB", borderBottom: "1px solid #EBEBEB", overflow: "hidden", position: "relative" }}>
 
       {/* Dekoratif yeşil leke — sol alt */}
       <div style={{

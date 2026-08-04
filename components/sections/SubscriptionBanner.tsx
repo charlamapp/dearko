@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Check } from "lucide-react"
 import { motion } from "framer-motion"
 import { subscriptionPlans } from "@/lib/data"
+import { useState, useEffect } from "react"
 
 const stagger = {
   hidden: {},
@@ -15,8 +16,16 @@ const card = {
 }
 
 export default function SubscriptionBanner() {
+  const [bg, setBg] = useState("#F5F5F5")
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      const v = c?.appearance?.subscriptionBanner?.bg
+      if (v) setBg(v)
+    }).catch(() => {})
+  }, [])
+
   return (
-    <section className="section" style={{ background: "#F5F5F5", borderBottom: "1px solid #E8E8E8" }}>
+    <section className="section" style={{ background: bg, borderBottom: "1px solid #E8E8E8" }}>
       <div className="wrap">
 
         <motion.div

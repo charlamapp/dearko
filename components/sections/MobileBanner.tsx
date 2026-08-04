@@ -2,15 +2,27 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=1600&q=85"
 
 export default function MobileBanner() {
+  const [image, setImage] = useState(DEFAULT_IMAGE)
+
+  useEffect(() => {
+    fetch("/api/content").then(r => r.json()).then(c => {
+      const img = c?.appearance?.mobileBanner?.image
+      if (img) setImage(img)
+    }).catch(() => {})
+  }, [])
+
   return (
     <section
       className="relative overflow-hidden"
       style={{ minHeight: "55vh", display: "flex", alignItems: "flex-end", borderBottom: "1px solid #E8E8E8" }}
     >
       <motion.img
-        src="https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=1600&q=85"
+        src={image}
         alt="Mobil Kahve Aracı"
         className="absolute inset-0 w-full h-full object-cover"
         initial={{ scale: 1.08 }}
